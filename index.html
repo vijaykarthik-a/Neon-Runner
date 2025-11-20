@@ -1,107 +1,352 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON RUNNER - Ultimate Edition</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NEON RUNNER - Ultimate Fixed (Smooth Neon)</title>
+  <style>
+    /* Embedded CSS: Smooth Red Neon, full-screen container */
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+    :root{--r:#ff0044;--r2:#ff6666;--bg:#060004}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;background:radial-gradient(ellipse at center,#070006 0%,#000 100%);font-family:Orbitron,monospace;color:var(--r)}
+    .app{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+    .game-shell{width:100%;height:100%;max-width:1920px;max-height:1080px;border-radius:0;overflow:hidden;position:relative;border:0}
+    /* Boot */
+    .boot-screen{position:absolute;inset:0;background:linear-gradient(135deg,#000,#100006);display:flex;align-items:center;justify-content:center;z-index:2000}
+    .boot-inner{color:var(--r);text-align:center}
+    .logo{font-size:48px;letter-spacing:6px;text-shadow:0 0 20px var(--r)}
+    .progress{margin-top:18px;padding:6px 12px;border:2px solid rgba(255,0,68,0.2);display:inline-block}
+    /* UI */
+    .ui-panel{position:absolute;top:12px;left:12px;z-index:1500;background:rgba(0,0,0,0.35);backdrop-filter:blur(6px);padding:8px 12px;border-radius:8px;border:1px solid rgba(255,0,68,0.12)}
+    .ui-panel .row{display:flex;gap:12px;align-items:center}
+    .menu{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1000}
+    .menu-inner{background:rgba(0,0,0,0.45);padding:28px;border-radius:12px;border:1px solid rgba(255,0,68,0.12)}
+    .menu h1{font-size:28px;margin-bottom:12px;color:var(--r)}
+    .menu .btn{display:inline-block;padding:10px 16px;margin:8px;border-radius:8px;background:rgba(255,0,68,0.08);border:1px solid rgba(255,0,68,0.18);cursor:pointer}
+    /* Canvas */
+    canvas{display:block;width:100%;height:100%;background:linear-gradient(180deg,#070006,#000);image-rendering:pixelated}
+    /* HUD inside game screen */
+    .hud{position:absolute;top:12px;right:12px;z-index:1300;background:rgba(0,0,0,0.35);padding:8px 12px;border-radius:8px;border:1px solid rgba(255,0,68,0.08)}
+    .troll-message{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);z-index:1600;color:var(--r);background:rgba(0,0,0,0.45);padding:8px 12px;border-radius:8px;border:1px solid rgba(255,0,68,0.08);display:none}
+    /* Modal simple */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.65);z-index:2500}
+    .modal .box{background:#070004;padding:18px;border-radius:10px;border:1px solid rgba(255,0,68,0.12)}
+    /* small responsive tweaks */
+    @media(max-width:800px){.menu-inner{width:92vw}}
+  </style>
 </head>
 <body>
-    <div class="boot-screen" id="bootScreen">
-        <div class="matrix-bg"></div>
-        <div class="boot-content">
-            <div class="boot-lines">
-                <div class="boot-line" data-delay="0">INITIALIZING QUANTUM SYSTEMS...</div>
-                <div class="boot-line" data-delay="400">LOADING NEURAL GRAPHICS ENGINE...</div>
-                <div class="boot-line" data-delay="800">CALIBRATING REALITY MATRIX...</div>
-                <div class="boot-line" data-delay="1200">LOADING 19 DIMENSIONAL LEVELS...</div>
-                <div class="boot-line" data-delay="1600">CHECKING MEMORY... ENHANCED</div>
-                <div class="boot-line" data-delay="2000">ACTIVATING NEON PROTOCOLS...</div>
-                <div class="boot-line" data-delay="2400">SYSTEM READY - ULTIMATE MODE</div>
-            </div>
-            <div class="boot-logo" data-delay="2800">
-                <span class="logo-char">◢</span>
-                <span class="logo-text">NEON RUNNER</span>
-                <span class="logo-char">◣</span>
-                <div class="logo-subtitle">ULTIMATE EDITION</div>
-            </div>
-            <div class="progress-container" data-delay="3200">
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                    <div class="progress-glow"></div>
-                </div>
-                <div class="progress-text">LOADING...</div>
-            </div>
+  <div class="app">
+    <div class="game-shell" id="gameShell">
+
+      <div class="boot-screen" id="bootScreen">
+        <div class="boot-inner">
+          <div class="logo">NEON RUNNER — ULTIMATE EDITION</div>
+          <div class="progress">BOOTING... PLEASE WAIT</div>
         </div>
+      </div>
+
+      <div class="menu" id="mainMenu">
+        <div class="menu-inner">
+          <h1>◢ NEON RUNNER ◣</h1>
+          <div>
+            <div class="btn" id="startBtn">START GAME</div>
+            <div class="btn" id="levelsBtn">LEVEL SELECT</div>
+            <div class="btn" id="instrBtn">INSTRUCTIONS</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ui-panel" id="uiPanel" style="display:none">
+        <div class="row"><div id="levelLabel">LEVEL: 1</div><div id="scoreLabel">SCORE: 0</div><div id="livesLabel">LIVES: 3</div></div>
+      </div>
+
+      <div class="hud" id="hud" style="display:none">
+        <div id="dotsLabel">DOTS: 0/0</div>
+      </div>
+
+      <div class="troll-message" id="trollMessage"></div>
+
+      <canvas id="gameCanvas"></canvas>
+
     </div>
+  </div>
 
-    <div class="game-container" id="gameContainer">
-        <div class="scanlines"></div>
-        <div class="ambient-particles"></div>
-        
-        <div id="mainMenu" class="menu">
-            <h1 class="main-title">
-                <span class="title-glow">◢ NEON RUNNER ◣</span>
-                <div class="title-subtitle">ULTIMATE EDITION</div>
-            </h1>
-            <div class="menu-items">
-                <div class="menu-item" onclick="showDifficultySelect()">
-                    <span class="menu-icon">►</span>
-                    <span class="menu-text">START GAME</span>
-                </div>
-                <div class="menu-item" onclick="showLevelSelect()">
-                    <span class="menu-icon">◆</span>
-                    <span class="menu-text">LEVEL SELECT</span>
-                </div>
-                <div class="menu-item" onclick="showInstructions()">
-                    <span class="menu-icon">?</span>
-                    <span class="menu-text">INSTRUCTIONS</span>
-                </div>
-                <div class="menu-item" onclick="goBack()">
-                    <span class="menu-icon">◄</span>
-                    <span class="menu-text">BACK TO PORTFOLIO</span>
-                </div>
-            </div>
-        </div>
+  <script>
+    // Neon Runner - Fixed version
+    class NeonRunnerFixed{
+      constructor(){
+        // DOM
+        this.canvas = document.getElementById('gameCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.boot = document.getElementById('bootScreen');
+        this.menu = document.getElementById('mainMenu');
+        this.uiPanel = document.getElementById('uiPanel');
+        this.hud = document.getElementById('hud');
+        this.trollMessage = document.getElementById('trollMessage');
 
-        <div id="difficultySelect" class="menu hidden">
-            <h1>SELECT DIFFICULTY</h1>
-            <div class="difficulty-grid">
-                <div class="difficulty-card" onclick="startGame('easy')">
-                    <div class="difficulty-icon">😊</div>
-                    <div class="difficulty-name">EASY</div>
-                    <div class="difficulty-desc">Chill Journey</div>
-                    <div class="difficulty-stats">19 Levels • Forgiving</div>
-                </div>
-                <div class="difficulty-card" onclick="startGame('medium')">
-                    <div class="difficulty-icon">😐</div>
-                    <div class="difficulty-name">MEDIUM</div>
-                    <div class="difficulty-desc">Balanced Challenge</div>
-                    <div class="difficulty-stats">19 Levels • Standard</div>
-                </div>
-                <div class="difficulty-card" onclick="startGame('hard')">
-                    <div class="difficulty-icon">😈</div>
-                    <div class="difficulty-name">HARD</div>
-                    <div class="difficulty-desc">Troll Nightmare</div>
-                    <div class="difficulty-stats">19 Levels • Insane</div>
-                </div>
-            </div>
-            <div class="menu-item back-btn" onclick="showMainMenu()">
-                <span class="menu-icon">◄</span>
-                <span class="menu-text">BACK</span>
-            </div>
-        </div>
+        // gameplay state
+        this.TILE = 36; // base tile size -> scales with canvas later
+        this.PLAYER_W = 28; this.PLAYER_H = 36;
+        this.DOT_R = 8;
+        this.level = 1; this.score = 0; this.lives = 3; this.dotsCollected = 0; this.totalDots = 0; this.playing = false;
+        this.keys = {};
 
-        <div id="levelSelect" class="menu hidden">
-            <h1>LEVEL SELECT</h1>
-            <div class="level-grid" id="levelGrid"></div>
-            <div class="menu-item back-btn" onclick="showMainMenu()">
-                <span class="menu-icon">◄</span>
-                <span class="menu-text">BACK</span>
-            </div>
-        </div>
-    </div>
+        // world
+        this.platforms = [];
+        this.enemies = [];
+        this.dots = [];
+        this.exit = {x:0,y:0};
 
-    <script src="game.js"></script>
+        // visual/controls
+        this.controlsReversed = false; this.speedMultiplier = 1;
+
+        // levels: create 19 levels procedurally
+        this.makeLevels(19);
+
+        this.attachEvents();
+        this.resizeCanvas();
+        window.addEventListener('resize', ()=>this.resizeCanvas());
+
+        // show boot for 2s (reduced)
+        setTimeout(()=>{this.hideBoot();},2000);
+      }
+
+      hideBoot(){
+        if(this.boot) this.boot.style.display='none';
+        this.menu.style.display='flex';
+      }
+
+      attachEvents(){
+        document.addEventListener('keydown', e=>{ this.keys[e.key]=true; if(e.key===' ') e.preventDefault(); });
+        document.addEventListener('keyup', e=>{ this.keys[e.key]=false; });
+
+        document.getElementById('startBtn').addEventListener('click', ()=>{ this.startLevel(this.level); });
+        document.getElementById('levelsBtn').addEventListener('click', ()=>{ this.showLevelSelect(); });
+        document.getElementById('instrBtn').addEventListener('click', ()=>{ this.showInstructions(); });
+      }
+
+      makeLevels(n){
+        this.levels = [];
+        for(let L=1;L<=n;L++){
+          // base platform floor + some elevated platforms
+          const w = Math.max(14, Math.floor(14 + L/2));
+          const base = [];
+          // floor
+          base.push([0, (Math.floor(18)), w*2, 2]);
+          // create stepping platforms
+          for(let i=0;i<Math.min(8,3+Math.floor(L/3));i++){
+            const px = 3 + i*4 + (L%3);
+            const py = 14 - Math.floor(i*1.5) - (L%4);
+            const pw = 3 + (i%3);
+            base.push([px, py, pw, 1]);
+          }
+          // enemies scale with level
+          const enemies = [];
+          const numEnemies = Math.min(6, Math.floor(L/3));
+          for(let e=0;e<numEnemies;e++) enemies.push([6+e*5, 15 - (e%3)*2, 0.6 + (L/20)]);
+          // dots count grows
+          const dots = Math.min(12, 3 + Math.floor(L/2));
+          // start & exit
+          const startX = 2; const startY = 14;
+          const exitX = Math.max(8, w*2 - 3 - (L%5)); const exitY = 10 - Math.min(6,Math.floor(L/4));
+          // trolls only on higher levels
+          const trolls = L>12? ['reverse','speed','invisible']: (L>7? ['speed']: []);
+          this.levels.push({platforms:base,enemies:enemies,dots:dots,startX:startX,startY:startY,exitX:exitX,exitY:exitY,trolls:trolls});
+        }
+      }
+
+      showLevelSelect(){
+        // simple modal listing 19 buttons
+        const modal = document.createElement('div'); modal.className='modal';
+        const box = document.createElement('div'); box.className='box';
+        box.innerHTML = '<h3>Select Level</h3>';
+        for(let i=1;i<=this.levels.length;i++){
+          const b = document.createElement('button'); b.textContent='Level '+i; b.style.margin='6px'; b.onclick=(()=>{ return ()=>{ this.level=i; modal.remove(); this.startLevel(i); } })(); box.appendChild(b);
+        }
+        const close = document.createElement('div'); close.style.marginTop='8px'; close.innerHTML='<button onclick="(this.closest(\'.modal\')||{}).remove()">Close</button>';
+        box.appendChild(close); modal.appendChild(box); document.body.appendChild(modal);
+      }
+
+      showInstructions(){
+        const modal = document.createElement('div'); modal.className='modal';
+        modal.innerHTML = `<div class='box'><h3>Instructions</h3>
+          <p>Use ← → or A D to move. Space / W / ↑ to jump. Collect all dots then reach the green exit.</p>
+          <p>Higher levels have surprises (speed, reversed controls, invisible platforms).</p>
+          <div style='margin-top:10px'><button onclick="this.closest('.modal').remove()">Close</button></div></div>`;
+        document.body.appendChild(modal);
+      }
+
+      resizeCanvas(){
+        const rect = this.canvas.getBoundingClientRect();
+        // make backing resolution scale with devicePixelRatio for crispness
+        const dpr = window.devicePixelRatio || 1;
+        this.canvas.width = Math.round(rect.width * dpr);
+        this.canvas.height = Math.round(rect.height * dpr);
+        this.ctx.setTransform(dpr,0,0,dpr,0,0);
+      }
+
+      startLevel(levelNum){
+        this.menu.style.display='none';
+        this.uiPanel.style.display='block';
+        this.hud.style.display='block';
+        this.loadLevel(levelNum);
+        this.playing = true;
+        if(!this._anim) this.loop();
+      }
+
+      loadLevel(n){
+        const data = this.levels[n-1];
+        if(!data) return;
+        this.platforms = [];
+        this.enemies = [];
+        this.dots = [];
+        // scale tile size to canvas height so level fits
+        const availRows = 20; // grid rows
+        this.TILE = Math.max(24, Math.floor(Math.min(this.canvas.width/30, this.canvas.height/availRows)));
+        this.PLAYER_W = Math.floor(this.TILE*0.75); this.PLAYER_H = Math.floor(this.TILE*1.0);
+        this.DOT_R = Math.max(6, Math.floor(this.TILE*0.22));
+
+        data.platforms.forEach(p=>{
+          this.platforms.push({x:p[0]*this.TILE,y:p[1]*this.TILE,w:p[2]*this.TILE,h:p[3]*this.TILE});
+        });
+        data.enemies.forEach(e=>{ this.enemies.push({x:e[0]*this.TILE,y:e[1]*this.TILE,w:this.PLAYER_W,h:this.PLAYER_H,vx:e[2],dir:1}); });
+
+        // create dots placed above platforms (not inside)
+        this.totalDots = data.dots; this.dotsCollected=0;
+        // Gather platform top surfaces to place dots
+        const surfaces = [];
+        this.platforms.forEach(p=>{ surfaces.push({x:p.x+4,y:p.y- (this.DOT_R*2),w:Math.max(24,p.w-8)}); });
+        // If no surfaces, fallback to spread
+        for(let i=0;i<this.totalDots;i++){
+          if(surfaces.length>0){
+            const s = surfaces[i % surfaces.length];
+            const rx = s.x + Math.random()*(s.w - this.DOT_R*2);
+            const ry = s.y - Math.random()*Math.min(60, this.TILE*1.5);
+            this.dots.push({x:rx,y:ry,collected:false});
+          } else {
+            const rx = 50 + i*40; const ry = this.canvas.height/2 - 40 - i*8;
+            this.dots.push({x:rx,y:ry,collected:false});
+          }
+        }
+
+        // player
+        this.player = {x:data.startX*this.TILE,y:data.startY*this.TILE - (this.PLAYER_H),vx:0,vy:0,ground:false,runCycle:0};
+        this.exit = {x:data.exitX*this.TILE,y:data.exitY*this.TILE,w:this.TILE,h:this.TILE};
+        this.controlsReversed=false; this.speedMultiplier=1; this.fakeExits=[]; this.invisiblePlatforms=[];
+
+        // Possibly apply trolls for high levels after a short delay
+        if(data.trolls && data.trolls.length) this.applyTrolls(data.trolls);
+
+        // HUD
+        document.getElementById('levelLabel').textContent='LEVEL: '+n;
+        document.getElementById('scoreLabel').textContent='SCORE: '+this.score;
+        document.getElementById('livesLabel').textContent='LIVES: '+this.lives;
+        document.getElementById('dotsLabel').textContent=`DOTS: ${this.dotsCollected}/${this.totalDots}`;
+      }
+
+      applyTrolls(trolls){
+        trolls.forEach(t=>{
+          if(t==='reverse') setTimeout(()=>{ this.controlsReversed=true; this.showTroll('🔄 Controls Reversed!'); setTimeout(()=>{this.controlsReversed=false},5000); },3000);
+          if(t==='speed') setTimeout(()=>{ this.speedMultiplier=1.8; this.showTroll('⚡ Speed Boost!'); setTimeout(()=>{this.speedMultiplier=1},4000); },2000);
+          if(t==='invisible') setTimeout(()=>{ const p=this.platforms[Math.floor(Math.random()*this.platforms.length)]; if(p){ this.invisiblePlatforms.push(p); this.showTroll('👻 Invisible Platform'); setTimeout(()=>{ this.invisiblePlatforms = this.invisiblePlatforms.filter(x=>x!==p); },5500) } },3500);
+        });
+      }
+
+      showTroll(msg){ this.trollMessage.textContent=msg; this.trollMessage.style.display='block'; setTimeout(()=>{ this.trollMessage.style.display='none'; },2800); }
+
+      loop(){
+        this._anim = requestAnimationFrame(()=>this.loop());
+        if(!this.playing) return;
+        this.update(); this.render();
+      }
+
+      update(){
+        const move = 4 * this.speedMultiplier; const jumpPower = Math.max(10, this.TILE*0.32);
+        // input
+        let left = this.keys['ArrowLeft']||this.keys['a']; let right = this.keys['ArrowRight']||this.keys['d'];
+        if(this.controlsReversed){ [left,right]=[right,left]; }
+        if(left) this.player.vx = -move; else if(right) this.player.vx = move; else this.player.vx *= 0.8;
+        if((this.keys[' ']||this.keys['ArrowUp']||this.keys['w']) && this.player.ground){ this.player.vy = -jumpPower; this.player.ground=false; }
+        this.player.vy += 0.8; // gravity
+        this.player.x += this.player.vx; this.player.y += this.player.vy;
+        // collision with platforms
+        this.player.ground=false;
+        for(const p of this.platforms){
+          if(this.invisiblePlatforms.includes(p)) continue; // invisible
+          if(this.rectColl(this.player,{x:p.x,y:p.y,w:p.w,h:p.h} )){
+            // landed from above
+            if(this.player.vy>0 && this.player.y+this.PLAYER_H <= p.y + 12){ this.player.y = p.y - this.PLAYER_H; this.player.vy=0; this.player.ground=true; }
+            // hit side
+            else if(this.player.vx>0){ this.player.x = p.x - this.PLAYER_W; this.player.vx=0; }
+            else if(this.player.vx<0){ this.player.x = p.x + p.w; this.player.vx=0; }
+          }
+        }
+        // bounds
+        if(this.player.x < 0) this.player.x = 0;
+        if(this.player.x > (this.canvas.width/ (window.devicePixelRatio||1) ) - this.PLAYER_W) this.player.x = (this.canvas.width/ (window.devicePixelRatio||1) ) - this.PLAYER_W;
+        if(this.player.y > (this.canvas.height/ (window.devicePixelRatio||1) )) this.loseLife();
+        // enemies
+        for(const e of this.enemies){ e.x += e.vx * e.dir * (1 + (this.level/40));
+          // simple platform turn or bounds
+          if(e.x < 0 || e.x > (this.canvas.width/ (window.devicePixelRatio||1) ) - e.w) e.dir *= -1;
+          if(this.rectColl(this.player,e)) this.loseLife();
+        }
+        // dots
+        for(const d of this.dots){ if(!d.collected && this.pointRectColl({x:this.player.x+this.PLAYER_W/2,y:this.player.y+this.PLAYER_H/2}, {x:d.x,y:d.y,w:this.DOT_R*2,h:this.DOT_R*2})){ d.collected=true; this.dotsCollected++; this.score += 10; document.getElementById('scoreLabel').textContent='SCORE: '+this.score; document.getElementById('dotsLabel').textContent=`DOTS: ${this.dotsCollected}/${this.totalDots}`; } }
+        // exit (all dots collected)
+        if(this.dotsCollected >= this.totalDots && this.rectColl(this.player,this.exit)) this.completeLevel();
+
+        // run cycle for player animation
+        this.player.runCycle = (this.player.runCycle + Math.abs(this.player.vx)/4) % 6;
+      }
+
+      render(){
+        const cw = this.canvas.width/(window.devicePixelRatio||1); const ch = this.canvas.height/(window.devicePixelRatio||1);
+        this.ctx.clearRect(0,0,cw,ch);
+        // background grid subtle
+        this.ctx.fillStyle = '#000'; this.ctx.fillRect(0,0,cw,ch);
+        // platforms
+        this.ctx.shadowColor = 'rgba(255,0,68,0.6)'; this.ctx.shadowBlur = 12;
+        this.ctx.fillStyle = 'rgba(255,0,68,0.18)';
+        for(const p of this.platforms){ if(this.invisiblePlatforms.includes(p)) continue; this.ctx.fillRect(p.x,p.y,p.w,p.h); }
+        // exit
+        this.ctx.fillStyle = '#00ff88'; this.ctx.fillRect(this.exit.x,this.exit.y,this.exit.w||this.TILE,this.exit.h||this.TILE);
+        // fakeExits if any (not major)
+        // dots
+        this.ctx.shadowBlur = 8; this.ctx.fillStyle = '#ffb3c6';
+        for(const d of this.dots){ if(!d.collected){ this.ctx.beginPath(); this.ctx.arc(d.x+d.w?d.w/2: d.x + this.DOT_R, d.y + this.DOT_R, this.DOT_R, 0, Math.PI*2); this.ctx.fill(); } }
+        // enemies
+        this.ctx.shadowColor = 'rgba(255,50,50,0.6)'; this.ctx.fillStyle = '#ff6666';
+        for(const e of this.enemies){ this.ctx.fillRect(e.x,e.y,e.w,e.h); }
+        // player - running animation (simple bobbing & leg rectangle)
+        const px = this.player.x; const py = this.player.y;
+        // body
+        this.ctx.shadowColor = 'rgba(255,160,180,0.9)'; this.ctx.shadowBlur = 10; this.ctx.fillStyle = '#fff';
+        // slight run bob
+        const bob = Math.sin(this.player.runCycle*1.2)*4;
+        this.ctx.fillRect(px, py + bob, this.PLAYER_W, this.PLAYER_H);
+        // legs
+        const legOffset = (this.player.runCycle < 3) ? 6 : -6;
+        this.ctx.fillStyle = '#ff0044'; this.ctx.fillRect(px+4, py+this.PLAYER_H-8 + legOffset, 8, 8);
+        this.ctx.fillRect(px+this.PLAYER_W-12, py+this.PLAYER_H-8 - legOffset, 8, 8);
+        this.ctx.shadowBlur = 0;
+      }
+
+      rectColl(a,b){ return a.x < b.x + (b.w||this.PLAYER_W) && a.x + (this.PLAYER_W) > b.x && a.y < b.y + (b.h||this.PLAYER_H) && a.y + (this.PLAYER_H) > b.y; }
+      pointRectColl(p,r){ return p.x > r.x && p.x < r.x + r.w && p.y > r.y && p.y < r.y + r.h; }
+
+      loseLife(){ this.playing=false; this.lives--; document.getElementById('livesLabel').textContent='LIVES: '+this.lives; if(this.lives<=0){ this.gameOver(); } else { this.showRetry(); } }
+      showRetry(){ const modal=document.createElement('div'); modal.className='modal'; modal.innerHTML=`<div class='box'><h3>OOPS</h3><p>Lives left: ${this.lives}</p><div><button id='rtry'>Retry</button><button id='mm'>Menu</button></div></div>`; document.body.appendChild(modal); document.getElementById('rtry').onclick=(()=>{ modal.remove(); this.playing=true; this.loadLevel(this.level); }); document.getElementById('mm').onclick=(()=>{ modal.remove(); this.menu.style.display='flex'; this.uiPanel.style.display='none'; this.hud.style.display='none'; this.playing=false; }); }
+
+      completeLevel(){ this.playing=false; this.score += 100; const modal=document.createElement('div'); modal.className='modal'; modal.innerHTML=`<div class='box'><h3>LEVEL COMPLETE</h3><p>Score: ${this.score}</p><div><button id='nxt'>Next</button><button id='sel'>Level Select</button></div></div>`; document.body.appendChild(modal); document.getElementById('nxt').onclick=(()=>{ modal.remove(); this.level = Math.min(this.levels.length, this.level+1); this.startLevel(this.level); }); document.getElementById('sel').onclick=(()=>{ modal.remove(); this.showLevelSelect(); this.playing=false; }); }
+
+      gameOver(){ const modal=document.createElement('div'); modal.className='modal'; modal.innerHTML=`<div class='box'><h3>GAME OVER</h3><p>Final Score: ${this.score}</p><div><button id='rst'>Restart</button></div></div>`; document.body.appendChild(modal); document.getElementById('rst').onclick=(()=>{ modal.remove(); this.level=1; this.score=0; this.lives=3; this.startLevel(this.level); }); }
+    }
+
+    // Initialize after DOM loaded
+    window.addEventListener('load', ()=>{ window.game = new NeonRunnerFixed(); });
+  </script>
 </body>
 </html>
