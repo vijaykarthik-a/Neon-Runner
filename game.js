@@ -1,327 +1,453 @@
-/* Neon Runner - Fullscreen Smooth Neon Version (19 Levels + Running Character) */
+/* game.js — Neon Runner (improved + 19 levels) */
 
-class NeonRunnerFixed {
-  constructor() {
-    this.canvas = document.getElementById("gameCanvas");
-    this.ctx = this.canvas.getContext("2d");
+(() => {
+  // -- Globals & DOM
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
 
-    this.boot = document.getElementById("bootScreen");
-    this.menu = document.getElementById("mainMenu");
-    this.uiPanel = document.getElementById("uiPanel");
-    this.hud = document.getElementById("hud");
-    this.trollMessage = document.getElementById("trollMessage");
+  const boot = document.getElementById('bootScreen');
+  const menu = document.getElementById('menu');
+  const levelSelectModal = document.getElementById('levelSelect');
+  const instructionsModal = document.getElementById('instructions');
+  const message = document.getElementById('message');
+  const gameOverOverlay = document.getElementById('gameOver');
+  const levelCompleteOverlay = document.getElementById('levelComplete');
 
-    this.TILE = 36;
-    this.PLAYER_W = 28;
-    this.PLAYER_H = 36;
-    this.DOT_R = 8;
+  const levelLabel = document.getElementById('levelLabel');
+  const scoreLabel = document.getElementById('scoreLabel');
+  const livesLabel = document.getElementById('livesLabel');
+  const dotsLabel = document.getElementById('dotsLabel');
+  const totalDotsLabel = document.getElementById('totalDotsLabel');
+  const finalScore = document.getElementById('finalScore');
+  const levelScore = document.getElementById('levelScore');
 
-    this.level = 1;
-    this.score = 0;
-    this.lives = 3;
-    this.dotsCollected = 0;
-    this.totalDots = 0;
+  // UI buttons
+  document.getElementById('startButton').onclick = () => startGame();
+  document.getElementById('levelsButton').onclick = () => showLevelSelect();
+  document.getElementById('instructionsButton').onclick = () => showInstructions();
+  document.getElementById('retryBtn').onclick = () => { gameState.lives = 3; hideOverlay(gameOverOverlay); startLevel(gameState.level); };
+  document.getElementById('menuBtn').onclick = () => { hideOverlay(gameOverOverlay); showMainMenu(); };
+  document.getElementById('nextBtn').onclick = () => { hideOverlay(levelCompleteOverlay); nextLevel(); };
+  document.getElementById('lvlSelectBtn').onclick = () => { hideOverlay(levelCompleteOverlay); showLevelSelect(); };
+  document.getElementById('menuBtn2').onclick = () => { hideOverlay(levelCompleteOverlay); showMainMenu(); };
 
-    this.playing = false;
-    this.keys = {};
+  // -- State
+  let DPR = Math.max(1, window.devicePixelRatio || 1);
+  let GAME_W = 1200, GAME_H = 700; // logical target (canvas will scale)
+  let TILE = 36; // base tile, will be re-evaluated per level
+  const PLAYER_W_FACTOR = 0.75;
 
-    this.platforms = [];
-    this.enemies = [];
-    this.dots = [];
-    this.exit = { x: 0, y: 0 };
+  const gameState = {
+    playing: false,
+    level: 1,
+    score: 0,
+    lives: 3,
+    difficulty: 'easy'
+  };
 
-    this.controlsReversed = false;
-    this.speedMultiplier = 1;
-    this.fakeExits = [];
-    this.invisiblePlatforms = [];
+  let player = null;
+  let platforms = [];
+  let enemies = [];
+  let dots = [];
+  let exitObj = null;
+  let particles = [];
+  let animFrame = 0;
 
-    this.makeLevels(19);
+  let keys = {};
 
-    this.attachEvents();
-    this.resizeCanvas();
-    window.addEventListener("resize", () => this.resizeCanvas());
+  // -- Input events
+  window.addEventListener('keydown', (e) => { keys[e.key] = true; if (e.key === ' ') e.preventDefault(); });
+  window.addEventListener('keyup', (e) => { keys[e.key] = false; });
 
-    setTimeout(() => this.hideBoot(), 2000);
+  // -- Canvas scaling (responsive + DPR)
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    DPR = Math.max(1, window.devicePixelRatio || 1);
+    canvas.width = Math.round(rect.width * DPR);
+    canvas.height = Math.round(rect.height * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   }
-
-  hideBoot() {
-    this.boot.style.display = "none";
-    this.menu.style.display = "flex";
+  // set canvas to full window area
+  function fitCanvasFull() {
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    resizeCanvas();
   }
+  window.addEventListener('resize', () => { fitCanvasFull(); });
+  fitCanvasFull();
 
-  attachEvents() {
-    document.addEventListener("keydown", (e) => {
-      this.keys[e.key] = true;
-      if (e.key === " ") e.preventDefault();
-    });
-    document.addEventListener("keyup", (e) => (this.keys[e.key] = false));
+  // -- Boot screen fade
+  setTimeout(() => { if (boot) boot.style.display = 'none'; }, 1400);
 
-    document.getElementById("startBtn").addEventListener("click", () => this.startLevel(this.level));
-    document.getElementById("levelsBtn").addEventListener("click", () => this.showLevelSelect());
-    document.getElementById("instrBtn").addEventListener("click", () => this.showInstructions());
-  }
-
-  resizeCanvas() {
-    const rect = this.canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    this.canvas.width = Math.round(rect.width * dpr);
-    this.canvas.height = Math.round(rect.height * dpr);
-    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-
-  makeLevels(n) {
-    this.levels = [];
-    for (let L = 1; L <= n; L++) {
-      const w = Math.max(14, Math.floor(14 + L / 2));
-      const platforms = [];
-
-      platforms.push([0, 18, w * 2, 2]);
-
-      for (let i = 0; i < Math.min(8, 3 + Math.floor(L / 3)); i++) {
-        const px = 3 + i * 4 + (L % 3);
-        const py = 14 - Math.floor(i * 1.5) - (L % 4);
-        const pw = 3 + (i % 3);
-        platforms.push([px, py, pw, 1]);
+  // -- Level generation: 19 levels
+  function makeLevels() {
+    const levels = [];
+    for (let L = 1; L <= 19; L++) {
+      // grid base: width in tiles and platform patterns
+      const widthTiles = 34;
+      const base = [];
+      base.push([0, 18, widthTiles, 1]); // ground
+      // Add stepped platforms, more with L
+      const stepCount = Math.min(8, 2 + Math.floor(L / 3));
+      for (let i = 0; i < stepCount; i++) {
+        const px = 3 + i * 3 + (L % 2);
+        const py = 14 - Math.floor(i * 1.2) - (L % 3);
+        const pw = 3 + ((i + L) % 3);
+        base.push([px, py, pw, 1]);
       }
-
+      // add occasional mid large platform
+      if (L > 6) base.push([Math.max(6, L % 5 + 10), 10, 8, 1]);
+      // enemy density scales
       const enemies = [];
       const numEnemies = Math.min(6, Math.floor(L / 3));
-      for (let e = 0; e < numEnemies; e++) {
-        enemies.push([6 + e * 5, 15 - (e % 3) * 2, 0.6 + L / 20]);
-      }
+      for (let e = 0; e < numEnemies; e++) enemies.push([6 + e * 4 + (L % 3), 16 - (e % 3), 0.6 + L / 30]);
 
       const dots = Math.min(12, 3 + Math.floor(L / 2));
-      const startX = 2,
-        startY = 14;
+      const startX = 2, startY = 16;
+      const exitX = widthTiles - 4 - (L % 5), exitY = 14 - Math.min(6, Math.floor(L / 4));
+      const trolls = L > 12 ? ['speed', 'reverse'] : (L > 8 ? ['speed'] : []);
+      levels.push({ platforms: base, enemies, dots, startX, startY, exitX, exitY, trolls });
+    }
+    return levels;
+  }
+  const LEVELS = makeLevels();
 
-      const exitX = w * 2 - 4;
-      const exitY = 10 - Math.min(6, Math.floor(L / 4));
+  // -- Utility: clamp
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-      const trolls =
-        L > 15
-          ? ["reverse", "speed", "invisible"]
-          : L > 10
-          ? ["speed", "invisible"]
-          : L > 6
-          ? ["speed"]
-          : [];
+  // -- Load a level: tile scaling, platform conversion, dot placement near platforms
+  function loadLevel(n) {
+    const L = LEVELS[n - 1] || LEVELS[LEVELS.length - 1];
+    // recalc tile size so map fits canvas height
+    const logicalRows = 20;
+    const ch = canvas.height / DPR;
+    TILE = Math.max(22, Math.floor(ch / logicalRows));
+    const playerW = Math.floor(TILE * PLAYER_W_FACTOR);
+    const playerH = Math.floor(TILE * 1.0);
 
-      this.levels.push({ platforms, enemies, dots, startX, startY, exitX, exitY, trolls });
+    // convert platforms to pixel coords
+    platforms = L.platforms.map(p => ({ x: p[0] * TILE, y: p[1] * TILE, w: p[2] * TILE, h: p[3] * TILE, visible: true }));
+
+    // player spawn
+    player = { x: L.startX * TILE + 2, y: L.startY * TILE - playerH, w: playerW, h: playerH, vx: 0, vy: 0, grounded: false, facingRight: true, runCycle: 0 };
+
+    // enemies
+    enemies = L.enemies.map(e => ({ x: e[0] * TILE, y: e[1] * TILE, w: playerW, h: playerH, vx: e[2], dir: 1 }));
+
+    // exit
+    exitObj = { x: L.exitX * TILE, y: L.exitY * TILE, w: TILE, h: TILE };
+
+    // dots: placed above platform surfaces (safe)
+    dots = [];
+    const surfaces = platforms.filter(p => p.h <= TILE * 2);
+    for (let i = 0; i < L.dots; i++) {
+      if (surfaces.length) {
+        const s = surfaces[i % surfaces.length];
+        const rx = s.x + 8 + Math.random() * Math.max(8, s.w - 16);
+        const ry = s.y - 8 - Math.random() * Math.min(40, TILE * 1.2);
+        dots.push({ x: rx, y: ry, r: Math.floor(TILE * 0.22), collected: false });
+      } else {
+        dots.push({ x: 40 + i * 48, y: (canvas.height / DPR) / 2, r: Math.floor(TILE * 0.22), collected: false });
+      }
+    }
+
+    // reset particles
+    particles = [];
+
+    // HUD
+    levelLabel.textContent = n;
+    scoreLabel.textContent = gameState.score;
+    livesLabel.textContent = gameState.lives;
+    dotsLabel.textContent = '0';
+    totalDotsLabel.textContent = dots.length;
+
+    // possible delayed trolls (less intrusive)
+    if (L.trolls && L.trolls.length) {
+      setTimeout(() => {
+        const t = L.trolls[Math.floor(Math.random() * L.trolls.length)];
+        if (t === 'speed') {
+          speedMultiplier = 1.8;
+          showToast('⚡ Speed surge!');
+          setTimeout(() => speedMultiplier = 1, 3000);
+        } else if (t === 'reverse') {
+          controlsReversed = true;
+          showToast('🔄 Controls reversed!');
+          setTimeout(() => controlsReversed = false, 3500);
+        }
+      }, 2000 + Math.random() * 2000);
     }
   }
 
-  showLevelSelect() {
-    const modal = document.createElement("div");
-    modal.className = "modal";
+  // -- Gameplay params
+  let gravity = 0.8;
+  let speedMultiplier = 1;
+  let controlsReversed = false;
 
-    const box = document.createElement("div");
-    box.className = "box";
-    box.innerHTML = `<h3>Select Level</h3>`;
+  // -- Particles helpers
+  function addParticle(x,y,vx,vy,col,life){ particles.push({x,y,vx,vy,col,life,max:life}); }
+  function updateParticles(){ for(let i=particles.length-1;i>=0;i--){ const p = particles[i]; p.x+=p.vx; p.y+=p.vy; p.vy+=0.2; p.life--; if(p.life<=0) particles.splice(i,1); } }
+  function drawParticles(){
+    for(const p of particles){ ctx.globalAlpha = Math.max(0, p.life / p.max); ctx.fillStyle = p.col; ctx.fillRect(p.x, p.y, 2,2); } ctx.globalAlpha =1;
+  }
 
-    this.levels.forEach((_, i) => {
-      const b = document.createElement("button");
-      b.textContent = "Level " + (i + 1);
-      b.onclick = () => {
-        modal.remove();
-        this.level = i + 1;
-        this.startLevel(this.level);
-      };
-      box.appendChild(b);
+  // -- Collision helpers
+  function rectColl(a,b){ return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y; }
+  function pointInRect(px,py,b){ return px > b.x && px < b.x + b.w && py > b.y && py < b.y + b.h; }
+
+  // -- Rendering
+  function render() {
+    const cw = canvas.width / DPR, ch = canvas.height / DPR;
+    // background
+    const g = ctx.createLinearGradient(0,0,0,ch);
+    g.addColorStop(0, '#0a0a0a');
+    g.addColorStop(1, '#000');
+    ctx.fillStyle = g; ctx.fillRect(0,0,cw,ch);
+
+    // platforms
+    ctx.shadowBlur = 14; ctx.shadowColor = 'rgba(255,0,68,0.6)';
+    platforms.forEach(p => {
+      if (p.visible) {
+        ctx.fillStyle = 'rgba(255,0,68,0.16)'; ctx.fillRect(p.x,p.y,p.w,p.h);
+        // highlight
+        ctx.fillStyle = 'rgba(255,120,120,0.06)'; ctx.fillRect(p.x+2, p.y+2, p.w-4, 3);
+      } else {
+        ctx.strokeStyle = 'rgba(255,0,68,0.22)'; ctx.lineWidth = 1; ctx.setLineDash([6,6]); ctx.strokeRect(p.x,p.y,p.w,p.h); ctx.setLineDash([]);
+      }
+    });
+    ctx.shadowBlur = 0;
+
+    // dots
+    dots.forEach(d => {
+      if (!d.collected) {
+        ctx.beginPath();
+        ctx.fillStyle = '#ff8866'; ctx.shadowBlur = 10; ctx.shadowColor = '#ff4422';
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI*2); ctx.fill();
+        ctx.shadowBlur = 0;
+        // core
+        ctx.fillStyle = '#fff0e0'; ctx.beginPath(); ctx.arc(d.x - 2, d.y - 2, d.r*0.5, 0, Math.PI*2); ctx.fill();
+      }
     });
 
-    const close = document.createElement("button");
-    close.textContent = "Close";
-    close.onclick = () => modal.remove();
-    box.appendChild(close);
-
-    modal.appendChild(box);
-    document.body.appendChild(modal);
-  }
-
-  showInstructions() {
-    const modal = document.createElement("div");
-    modal.className = "modal";
-    modal.innerHTML = `
-      <div class="box">
-        <h3>Instructions</h3>
-        <p>← → or A D: Move</p>
-        <p>Space / W / ↑: Jump</p>
-        <p>Collect all dots & reach green exit.</p>
-        <button onclick="this.closest('.modal').remove()">Close</button>
-      </div>`;
-    document.body.appendChild(modal);
-  }
-
-  startLevel(levelNum) {
-    this.menu.style.display = "none";
-    this.uiPanel.style.display = "block";
-    this.hud.style.display = "block";
-
-    this.loadLevel(levelNum);
-    this.playing = true;
-
-    if (!this._loop) this.loop();
-  }
-
-  loadLevel(n) {
-    const data = this.levels[n - 1];
-    if (!data) return;
-
-    this.platforms = [];
-    this.enemies = [];
-    this.dots = [];
-
-    const rows = 20;
-    this.TILE = Math.max(24, Math.floor(Math.min(this.canvas.width / 30, this.canvas.height / rows)));
-
-    this.PLAYER_W = Math.floor(this.TILE * 0.75);
-    this.PLAYER_H = Math.floor(this.TILE * 1.0);
-    this.DOT_R = Math.floor(this.TILE * 0.22);
-
-    data.platforms.forEach((p) =>
-      this.platforms.push({ x: p[0] * this.TILE, y: p[1] * this.TILE, w: p[2] * this.TILE, h: p[3] * this.TILE })
-    );
-
-    data.enemies.forEach((e) =>
-      this.enemies.push({ x: e[0] * this.TILE, y: e[1] * this.TILE, w: this.PLAYER_W, h: this.PLAYER_H, vx: e[2], dir: 1 })
-    );
-
-    this.totalDots = data.dots;
-    this.dotsCollected = 0;
-
-    const surfaces = [];
-    this.platforms.forEach((p) => surfaces.push({ x: p.x + 5, y: p.y - this.DOT_R * 2, w: p.w - 10 }));
-
-    for (let i = 0; i < this.totalDots; i++) {
-      const s = surfaces[i % surfaces.length];
-      const rx = s.x + Math.random() * Math.max(5, s.w - this.DOT_R * 2);
-      const ry = s.y - Math.random() * Math.min(60, this.TILE * 1.5);
-      this.dots.push({ x: rx, y: ry, collected: false });
+    // exit (green when available)
+    const allCollected = dots.length && dots.every(d => d.collected);
+    if (allCollected) {
+      ctx.fillStyle = '#00ff88'; ctx.shadowBlur = 8; ctx.shadowColor = '#00ff88'; ctx.fillRect(exitObj.x, exitObj.y, exitObj.w, exitObj.h);
+    } else {
+      ctx.fillStyle = '#666'; ctx.fillRect(exitObj.x, exitObj.y, exitObj.w, exitObj.h);
     }
+    ctx.shadowBlur = 0;
 
-    this.player = {
-      x: data.startX * this.TILE,
-      y: data.startY * this.TILE - this.PLAYER_H,
-      vx: 0,
-      vy: 0,
-      ground: false,
-      runCycle: 0,
-    };
-
-    this.exit = {
-      x: data.exitX * this.TILE,
-      y: data.exitY * this.TILE,
-      w: this.TILE,
-      h: this.TILE,
-    };
-
-    this.controlsReversed = false;
-    this.speedMultiplier = 1;
-    this.fakeExits = [];
-    this.invisiblePlatforms = [];
-
-    if (data.trolls && data.trolls.length) this.applyTrolls(data.trolls);
-
-    document.getElementById("levelLabel").textContent = "LEVEL: " + n;
-    document.getElementById("scoreLabel").textContent = "SCORE: " + this.score;
-    document.getElementById("livesLabel").textContent = "LIVES: " + this.lives;
-    document.getElementById("dotsLabel").textContent = `DOTS: ${this.dotsCollected}/${this.totalDots}`;
-  }
-
-  applyTrolls(trolls) {
-    trolls.forEach((t) => {
-      if (t === "reverse")
-        setTimeout(() => {
-          this.controlsReversed = true;
-          this.showTroll("🔄 Controls Reversed!");
-          setTimeout(() => (this.controlsReversed = false), 5000);
-        }, 3000);
-
-      if (t === "speed")
-        setTimeout(() => {
-          this.speedMultiplier = 1.8;
-          this.showTroll("⚡ Speed Boost!");
-          setTimeout(() => (this.speedMultiplier = 1), 4000);
-        }, 2000);
-
-      if (t === "invisible")
-        setTimeout(() => {
-          const p = this.platforms[Math.floor(Math.random() * this.platforms.length)];
-          if (p) {
-            this.invisiblePlatforms.push(p);
-            this.showTroll("👻 Invisible Platform");
-            setTimeout(() => (this.invisiblePlatforms = this.invisiblePlatforms.filter((x) => x !== p)), 5500);
-          }
-        }, 3500);
+    // enemies
+    enemies.forEach(e => {
+      ctx.save();
+      const bounce = Math.sin(animFrame * 0.06) * 3;
+      ctx.shadowBlur = 12; ctx.shadowColor = '#ff8a00';
+      ctx.fillStyle = '#ff5533'; ctx.fillRect(e.x, e.y + bounce, e.w, e.h);
+      ctx.restore();
     });
+
+    // player (simple pixel runner)
+    ctx.save();
+    const bob = Math.sin(player.runCycle) * 3;
+    ctx.shadowBlur = 14; ctx.shadowColor = 'rgba(255,255,255,0.6)';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(player.x, player.y + bob, player.w, player.h);
+    // legs
+    ctx.fillStyle = '#ff0044';
+    const legOffset = Math.sin(player.runCycle*1.6) * 4;
+    ctx.fillRect(player.x + 4, player.y + player.h - 8 + Math.abs(legOffset), 6, 6);
+    ctx.fillRect(player.x + player.w - 10, player.y + player.h - 8 - Math.abs(legOffset), 6, 6);
+    ctx.restore();
+
+    // particles
+    drawParticles();
   }
 
-  showTroll(msg) {
-    this.trollMessage.textContent = msg;
-    this.trollMessage.style.display = "block";
-    setTimeout(() => (this.trollMessage.style.display = "none"), 2800);
-  }
+  // -- Update physics & gameplay
+  function update() {
+    animFrame++;
+    player.runCycle += Math.abs(player.vx) * 0.08;
 
-  loop() {
-    this._loop = requestAnimationFrame(() => this.loop());
-    if (!this.playing) return;
-    this.update();
-    this.render();
-  }
+    // input
+    let left = keys['ArrowLeft'] || keys['a'];
+    let right = keys['ArrowRight'] || keys['d'];
+    if (controlsReversed) { [left, right] = [right, left]; }
 
-  update() {
-    const move = 4 * this.speedMultiplier;
-    const jumpPower = Math.max(10, this.TILE * 0.32);
+    const moveSpeed = 4 * speedMultiplier;
+    if (left) { player.vx = -moveSpeed; player.facingRight = false; }
+    else if (right) { player.vx = moveSpeed; player.facingRight = true; }
+    else player.vx *= 0.85;
 
-    let left = this.keys["ArrowLeft"] || this.keys["a"];
-    let right = this.keys["ArrowRight"] || this.keys["d"];
-
-    if (this.controlsReversed) [left, right] = [right, left];
-
-    if (left) this.player.vx = -move;
-    else if (right) this.player.vx = move;
-    else this.player.vx *= 0.8;
-
-    if ((this.keys[" "] || this.keys["ArrowUp"] || this.keys["w"]) && this.player.ground) {
-      this.player.vy = -jumpPower;
-      this.player.ground = false;
+    if ((keys[' '] || keys['ArrowUp'] || keys['w']) && player.grounded) {
+      player.vy = -Math.max(10, TILE * 0.28);
+      player.grounded = false;
+      // small jump particles
+      for (let i=0;i<4;i++) addParticle(player.x + player.w/2, player.y + player.h, (Math.random()-0.5)*2, -Math.random()*2 - 1, 'rgba(255,120,80,1)', 20);
     }
 
-    this.player.vy += 0.8;
-    this.player.x += this.player.vx;
-    this.player.y += this.player.vy;
+    // gravity & motion
+    player.vy += gravity;
+    player.x += player.vx;
+    player.y += player.vy;
 
-    const cw = this.canvas.width / (window.devicePixelRatio || 1);
-    const ch = this.canvas.height / (window.devicePixelRatio || 1);
-
-    this.player.ground = false;
-    for (const p of this.platforms) {
-      if (this.invisiblePlatforms.includes(p)) continue;
-
-      if (this.collide(this.player, p)) {
-        if (this.player.vy > 0 && this.player.y + this.PLAYER_H <= p.y + 12) {
-          this.player.y = p.y - this.PLAYER_H;
-          this.player.vy = 0;
-          this.player.ground = true;
-        } else if (this.player.vx > 0) {
-          this.player.x = p.x - this.PLAYER_W;
-          this.player.vx = 0;
-        } else if (this.player.vx < 0) {
-          this.player.x = p.x + p.w;
-          this.player.vx = 0;
+    // platform collision
+    player.grounded = false;
+    for (const p of platforms) {
+      if (!p.visible) continue;
+      if (player.x + player.w > p.x && player.x < p.x + p.w && player.y + player.h > p.y && player.y < p.y + p.h) {
+        if (player.vy > 0 && (player.y + player.h) - player.vy <= p.y + 8) {
+          // land
+          player.y = p.y - player.h;
+          player.vy = 0;
+          player.grounded = true;
+        } else {
+          // side collision
+          if (player.vx > 0) player.x = p.x - player.w;
+          else if (player.vx < 0) player.x = p.x + p.w;
+          player.vx = 0;
         }
       }
     }
 
-    if (this.player.x < 0) this.player.x = 0;
-    if (this.player.x > cw - this.PLAYER_W) this.player.x = cw - this.PLAYER_W;
-    if (this.player.y > ch) this.loseLife();
-
-    for (const e of this.enemies) {
-      e.x += e.vx * e.dir * (1 + this.level / 40);
-      if (e.x < 0 || e.x > cw - e.w) e.dir *= -1;
-      if (this.collide(this.player, e)) this.loseLife();
+    // world bounds
+    const cw = canvas.width / DPR, ch = canvas.height / DPR;
+    player.x = clamp(player.x, 0, Math.max(0, cw - player.w));
+    if (player.y > ch + 100) { // fell out
+      loseLifeOrRespawn();
     }
 
-    for (const d of this.dots) {
-      if (!d.collected && this.pointColl({ x: this.player.x + this.PLAYER_W / 2, y: this.player.y + this.PLAYER_H / 2 }, { x:
+    // enemies
+    for (const e of enemies) {
+      e.x += e.vx * (gameState.difficulty === 'easy' ? 0.8 : 1);
+      if (e.x < 0 || e.x > cw - e.w) e.vx *= -1;
+      // collision
+      if (rectColl(player, e)) {
+        // hit: respawn or lose life
+        for (let i=0;i<10;i++) addParticle(player.x + player.w/2, player.y + player.h/2, (Math.random()-0.5)*6, (Math.random()-0.5)*6, 'rgba(255,40,0,1)', 40);
+        loseLifeOrRespawn();
+        break;
+      }
+    }
+
+    // dots collect
+    for (const d of dots) {
+      if (!d.collected && Math.hypot((d.x - (player.x + player.w/2)), (d.y - (player.y + player.h/2))) < d.r + Math.max(player.w, player.h)/3) {
+        d.collected = true;
+        gameState.score += (gameState.difficulty === 'easy' ? 10 : gameState.difficulty === 'medium' ? 15 : 25);
+        scoreLabel.textContent = gameState.score;
+        const collected = dots.filter(x => x.collected).length;
+        dotsLabel.textContent = collected;
+        // collect particles
+        for (let i=0;i<8;i++) addParticle(d.x, d.y, (Math.random()-0.5)*6, (Math.random()-0.5)*6, 'rgba(255,240,120,1)', 30);
+      }
+    }
+
+    // exit check (requires all dots)
+    const allCollected = dots.length && dots.every(d => d.collected);
+    if (allCollected && rectColl(player, exitObj)) {
+      levelComplete();
+    }
+
+    updateParticles();
+  }
+
+  function loseLifeOrRespawn() {
+    gameState.lives--;
+    livesLabel.textContent = gameState.lives;
+    if (gameState.lives <= 0) {
+      // game over
+      finalScore.textContent = gameState.score;
+      showOverlay(gameOverOverlay);
+      gameState.playing = false;
+    } else {
+      // respawn current level
+      loadLevel(gameState.level);
+    }
+  }
+
+  // -- Game flow helpers
+  function startGame() {
+    gameState.score = 0; gameState.lives = 3; gameState.level = 1; gameState.difficulty = 'easy';
+    menu.style.display = 'none';
+    gameState.playing = true;
+    startLevel(1);
+    runLoop();
+  }
+
+  function startLevel(n) {
+    gameState.level = n;
+    loadLevel(n);
+    gameState.playing = true;
+  }
+
+  function nextLevel() {
+    gameState.level = Math.min(LEVELS.length, gameState.level + 1);
+    startLevel(gameState.level);
+  }
+
+  function showMainMenu() {
+    menu.style.display = 'flex';
+    gameState.playing = false;
+  }
+
+  function showOverlay(el) { el.classList.remove('hidden'); }
+  function hideOverlay(el) { el.classList.add('hidden'); }
+
+  function showToast(txt, tms = 1800) {
+    message.textContent = txt; message.classList.remove('hidden');
+    setTimeout(()=> message.classList.add('hidden'), tms);
+  }
+
+  // Level select UI
+  function showLevelSelect(){
+    levelSelectModal.innerHTML = '';
+    levelSelectModal.classList.remove('hidden');
+    const box = document.createElement('div');
+    box.className = 'card';
+    box.innerHTML = '<h3>Select Level</h3>';
+    const grid = document.createElement('div');
+    grid.style.display='flex'; grid.style.flexWrap='wrap'; grid.style.gap='8px'; grid.style.justifyContent='center';
+    LEVELS.forEach((_,i) => {
+      const b = document.createElement('button'); b.textContent = 'L '+(i+1);
+      b.onclick = () => { levelSelectModal.classList.add('hidden'); startLevel(i+1); };
+      grid.appendChild(b);
+    });
+    box.appendChild(grid);
+    const close = document.createElement('button'); close.textContent = 'Close'; close.onclick = ()=> levelSelectModal.classList.add('hidden');
+    box.appendChild(close);
+    levelSelectModal.appendChild(box);
+  }
+
+  function showInstructions() {
+    instructionsModal.innerHTML = '';
+    instructionsModal.classList.remove('hidden');
+    const box = document.createElement('div'); box.className='card';
+    box.innerHTML = `<h3>Instructions</h3>
+      <p>← → or A D: move • Space / W / ↑: jump</p>
+      <p>Collect all dots then reach the exit. Harder levels add enemies & surprises.</p>`;
+    const close = document.createElement('button'); close.textContent = 'Close'; close.onclick = ()=> instructionsModal.classList.add('hidden');
+    box.appendChild(close); instructionsModal.appendChild(box);
+  }
+
+  function levelComplete() {
+    gameState.playing = false;
+    gameState.score += 100;
+    levelScore.textContent = gameState.score;
+    showOverlay(levelCompleteOverlay);
+  }
+
+  // -- Main loop
+  function runLoop() {
+    if (!gameState.playing) return;
+    update();
+    render();
+    requestAnimationFrame(runLoop);
+  }
+
+  // initial main menu show
+  showMainMenu();
+
+  // expose small API for debugging (optional)
+  window.NEON = { startGame, startLevel, LEVELS };
+
+})();
