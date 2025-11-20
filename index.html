@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEON RUNNER - Retro Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #1aff1a;
+            font-size: 18px;
+            text-shadow: 0 0 10px #1aff1a;
+        }
+
+        .boot-line {
+            opacity: 0;
+            margin: 5px 0;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .boot-logo {
+            font-size: 48px;
+            margin: 20px 0;
+            opacity: 0;
+            letter-spacing: 8px;
+            animation: logoGlow 2s ease-in-out;
+        }
+
+        @keyframes logoGlow {
+            0% { opacity: 0; text-shadow: 0 0 0px #1aff1a; }
+            50% { opacity: 1; text-shadow: 0 0 40px #1aff1a, 0 0 60px #0a6b0a; }
+            100% { opacity: 1; text-shadow: 0 0 20px #1aff1a; }
+        }
+
+        .progress-bar {
+            width: 300px;
+            height: 20px;
+            border: 2px solid #1aff1a;
+            margin: 20px 0;
+            position: relative;
+            opacity: 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #1aff1a;
+            width: 0%;
+            box-shadow: 0 0 20px #1aff1a;
+            animation: fillProgress 2s ease-out forwards;
+        }
+
+        @keyframes fillProgress {
+            to { width: 100%; }
+        }
+
+        .game-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            background: #0a0a0a;
+            border: 4px solid #1a4d1a;
+            box-shadow: 0 0 30px rgba(26, 255, 26, 0.3), inset 0 0 50px rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            transform: scale(0.8);
+            animation: containerAppear 1s ease-out 3s forwards;
+        }
+
+        @keyframes containerAppear {
+            to { 
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .scanline {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 0, 0, 0.3) 51%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+            animation: scan 8s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        .screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+        }
+
+        .hud {
+            color: #1aff1a;
+            text-shadow: 0 0 5px #1aff1a, 0 0 10px #0a6b0a;
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        canvas {
+            display: block;
+            background: #000;
+            border: 2px solid #1a4d1a;
+            box-shadow: inset 0 0 20px rgba(26, 255, 26, 0.1);
+        }
+
+        .menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #1aff1a;
+            text-shadow: 0 0 10px #1aff1a;
+            z-index: 5;
+        }
+
+        .menu h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px #1aff1a, 0 0 20px #1aff1a; }
+            50% { text-shadow: 0 0 20px #1aff1a, 0 0 40px #1aff1a, 0 0 60px #0a6b0a; }
+        }
+
+        .menu-item {
+            font-size: 24px;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 3px;
+            opacity: 0;
+            animation: menuItemAppear 0.5s forwards;
+        }
+
+        .menu-item:nth-child(2) { animation-delay: 0.2s; }
+        .menu-item:nth-child(3) { animation-delay: 0.4s; }
+        .menu-item:nth-child(4) { animation-delay: 0.6s; }
+
+        @keyframes menuItemAppear {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .menu-item:hover {
+            text-shadow: 0 0 20px #1aff1a, 0 0 40px #1aff1a;
+            transform: scale(1.1);
+        }
+
+        .level-select {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .level-btn {
+            padding: 20px;
+            background: #0a0a0a;
+            border: 2px solid #1a4d1a;
+            color: #1aff1a;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .level-btn:hover {
+            background: #1a4d1a;
+            box-shadow: 0 0 20px #1aff1a;
+            transform: scale(1.05);
+        }
+
+        .level-btn.locked {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .game-over, .level-complete {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #1aff1a;
+            text-align: center;
+            font-size: 36px;
+            text-shadow: 0 0 20px #1aff1a;
+            z-index: 5;
+        }
+
+        .pixel-perfect {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .glitch {
+            animation: glitchEffect 0.3s;
+        }
+
+        @keyframes glitchEffect {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-2px, -2px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="boot-screen" id="bootScreen">
+        <div class="boot-lines">
+            <div class="boot-line" style="animation-delay: 0s;">INITIALIZING SYSTEM...</div>
+            <div class="boot-line" style="animation-delay: 0.3s;">LOADING GRAPHICS ENGINE...</div>
+            <div class="boot-line" style="animation-delay: 0.6s;">CALIBRATING CONTROLLERS...</div>
+            <div class="boot-line" style="animation-delay: 0.9s;">LOADING LEVEL DATA...</div>
+            <div class="boot-line" style="animation-delay: 1.2s;">CHECKING MEMORY... OK</div>
+            <div class="boot-line" style="animation-delay: 1.5s;">SYSTEM READY</div>
+        </div>
+        <div class="boot-logo" style="animation-delay: 1.8s;">◢ NEON RUNNER ◣</div>
+        <div class="progress-bar" style="animation-delay: 2s;">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <div class="scanline"></div>
+        
+        <div id="mainMenu" class="menu">
+            <h1>◢ NEON RUNNER ◣</h1>
+            <div class="menu-item" onclick="startGame()">► START GAME</div>
+            <div class="menu-item" onclick="showLevelSelect()">► LEVEL SELECT</div>
+            <div class="menu-item" onclick="showInstructions()">► INSTRUCTIONS</div>
+        </div>
+
+        <div id="levelSelect" class="menu hidden">
+            <h1>SELECT LEVEL</h1>
+            <div class="level-select" id="levelGrid"></div>
+            <div class="menu-item" onclick="showMainMenu()" style="margin-top: 20px;">◄ BACK</div>
+        </div>
+
+        <div id="instructions" class="menu hidden">
+            <h1>INSTRUCTIONS</h1>
+            <div style="font-size: 18px; line-height: 1.8; max-width: 500px; margin: 20px auto;">
+                <p>ARROW KEYS - MOVE</p>
+                <p>SPACE - JUMP</p>
+                <p>COLLECT ALL DOTS</p>
+                <p>AVOID ENEMIES</p>
+                <p>REACH THE EXIT</p>
+            </div>
+            <div class="menu-item" onclick="showMainMenu()">◄ BACK</div>
+        </div>
+
+        <div id="gameScreen" class="screen hidden">
+            <div class="hud">
+                <div>LEVEL: <span id="levelNum">1</span></div>
+                <div>SCORE: <span id="score">0</span></div>
+                <div>LIVES: <span id="lives">3</span></div>
+                <div>DOTS: <span id="dots">0</span>/<span id="totalDots">0</span></div>
+            </div>
+            <canvas id="gameCanvas" width="760" height="520" class="pixel-perfect"></canvas>
+        </div>
+
+        <div id="gameOver" class="game-over hidden">
+            <h2>GAME OVER</h2>
+            <p style="font-size: 20px; margin: 20px 0;">FINAL SCORE: <span id="finalScore">0</span></p>
+            <div class="menu-item" onclick="restartGame()">► RETRY</div>
+            <div class="menu-item" onclick="showMainMenu()">► MAIN MENU</div>
+        </div>
+
+        <div id="levelComplete" class="level-complete hidden">
+            <h2>LEVEL COMPLETE!</h2>
+            <p style="font-size: 20px; margin: 20px 0;">SCORE: <span id="levelScore">0</span></p>
+            <div class="menu-item" onclick="nextLevel()">► NEXT LEVEL</div>
+            <div class="menu-item" onclick="showMainMenu()">► MAIN MENU</div>
+        </div>
+    </div>
+
+    <script>
+        // Boot sequence
+        setTimeout(() => {
+            document.getElementById('bootScreen').style.opacity = '0';
+            document.getElementById('bootScreen').style.transition = 'opacity 0.5s';
+            setTimeout(() => {
+                document.getElementById('bootScreen').style.display = 'none';
+            }, 500);
+        }, 4000);
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let gameState = {
+            currentLevel: 1,
+            score: 0,
+            lives: 3,
+            unlockedLevels: 1,
+            playing: false
+        };
+
+        const TILE_SIZE = 20;
+        const PLAYER_SIZE = 16;
+        const DOT_SIZE = 6;
+
+        let player = { x: 0, y: 0, vx: 0, vy: 0, grounded: false };
+        let dots = [];
+        let enemies = [];
+        let platforms = [];
+        let exit = { x: 0, y: 0 };
+        let keys = {};
+
+        const levelColors = [
+            '#1aff1a', '#1affff', '#ff1aff', '#ffff1a', '#ff6b1a',
+            '#1aff6b', '#6b1aff', '#ff1a6b', '#6bff1a', '#1a6bff',
+            '#ff6bff', '#ffff6b', '#6bffff', '#ff6b6b', '#6bff6b',
+            '#6b6bff', '#ffaa1a', '#1aaaff', '#aa1aff'
+        ];
+
+        const levels = [
+            { platforms: [[0,25,38,1],[5,20,10,1],[20,15,10,1],[5,10,8,1],[25,8,8,1]], enemies: [[15,19,1]], dots: 5, startX: 2, startY: 23, exitX: 35, exitY: 23 },
+            { platforms: [[0,25,38,1],[3,20,5,1],[10,18,8,1],[20,15,6,1],[28,12,8,1],[10,8,10,1]], enemies: [[12,17,1],[22,14,1]], dots: 7, startX: 2, startY: 23, exitX: 35, exitY: 10 },
+            { platforms: [[0,25,38,1],[5,20,3,1],[12,18,3,1],[19,16,3,1],[26,14,3,1],[33,12,3,1],[5,8,28,1]], enemies: [[7,19,1],[21,15,1],[28,7,1]], dots: 8, startX: 2, startY: 23, exitX: 35, exitY: 6 },
+            { platforms: [[0,25,38,1],[8,20,6,1],[24,20,6,1],[15,15,8,1],[5,10,10,1],[23,10,10,1]], enemies: [[10,19,1],[26,19,1],[17,14,1]], dots: 9, startX: 2, startY: 23, exitX: 30, exitY: 8 },
+            { platforms: [[0,25,38,1],[10,20,18,1],[5,15,8,1],[25,15,8,1],[15,10,8,1],[10,5,18,1]], enemies: [[12,19,1],[24,19,2],[6,14,1],[27,14,1]], dots: 10, startX: 2, startY: 23, exitX: 20, exitY: 3 },
+            { platforms: [[0,25,38,1],[3,22,5,1],[10,19,5,1],[17,16,5,1],[24,13,5,1],[31,10,5,1],[10,7,18,1]], enemies: [[5,21,1],[12,18,1],[19,15,1],[26,12,1]], dots: 11, startX: 2, startY: 23, exitX: 20, exitY: 5 },
+            { platforms: [[0,25,38,1],[5,20,8,1],[18,18,8,1],[25,20,8,1],[10,13,18,1],[5,8,5,1],[28,8,5,1]], enemies: [[7,19,2],[20,17,2],[15,12,1]], dots: 12, startX: 2, startY: 23, exitX: 30, exitY: 6 },
+            { platforms: [[0,25,38,1],[15,20,8,1],[8,15,6,1],[24,15,6,1],[15,10,8,1],[5,5,28,1]], enemies: [[17,19,2],[10,14,1],[26,14,1],[20,9,2]], dots: 13, startX: 2, startY: 23, exitX: 30, exitY: 3 },
+            { platforms: [[0,25,38,1],[5,20,3,1],[15,18,3,1],[25,16,3,1],[35,14,3,1],[10,12,3,1],[20,10,3,1],[5,5,28,1]], enemies: [[7,19,1],[17,17,1],[27,15,1],[12,11,1],[22,9,1]], dots: 14, startX: 2, startY: 23, exitX: 30, exitY: 3 },
+            { platforms: [[0,25,38,1],[10,20,5,1],[23,18,5,1],[5,15,8,1],[25,13,8,1],[15,10,8,1],[10,5,18,1]], enemies: [[12,19,2],[25,17,2],[7,14,1],[27,12,1],[17,9,2]], dots: 15, startX: 2, startY: 23, exitX: 20, exitY: 3 },
+            { platforms: [[0,25,38,1],[8,22,6,1],[24,22,6,1],[16,19,6,1],[8,16,6,1],[24,16,6,1],[12,12,14,1],[5,7,28,1]], enemies: [[10,21,1],[26,21,1],[18,18,1],[10,15,1],[26,15,1],[19,11,2]], dots: 16, startX: 2, startY: 23, exitX: 30, exitY: 5 },
+            { platforms: [[0,25,38,1],[5,20,5,1],[15,18,5,1],[25,16,5,1],[10,13,5,1],[20,11,5,1],[30,9,5,1],[8,6,22,1]], enemies: [[7,19,1],[17,17,1],[27,15,1],[12,12,1],[22,10,1],[32,8,1],[15,5,2]], dots: 17, startX: 2, startY: 23, exitX: 25, exitY: 4 },
+            { platforms: [[0,25,38,1],[12,20,14,1],[5,15,8,1],[25,15,8,1],[12,10,14,1],[18,5,8,1]], enemies: [[15,19,2],[7,14,1],[27,14,1],[15,9,2],[20,4,2]], dots: 18, startX: 2, startY: 23, exitX: 22, exitY: 3 },
+            { platforms: [[0,25,38,1],[8,21,5,1],[25,21,5,1],[15,18,8,1],[8,14,5,1],[25,14,5,1],[12,10,14,1],[5,5,28,1]], enemies: [[10,20,1],[27,20,1],[17,17,2],[10,13,1],[27,13,1],[19,9,2],[10,4,2]], dots: 19, startX: 2, startY: 23, exitX: 30, exitY: 3 },
+            { platforms: [[0,25,38,1],[5,22,3,1],[10,20,3,1],[15,18,3,1],[20,16,3,1],[25,14,3,1],[30,12,3,1],[10,9,18,1],[5,4,28,1]], enemies: [[7,21,1],[12,19,1],[17,17,1],[22,15,1],[27,13,1],[32,11,1],[15,8,2],[20,3,2]], dots: 20, startX: 2, startY: 23, exitX: 30, exitY: 2 },
+            { platforms: [[0,25,38,1],[15,20,8,1],[5,16,8,1],[25,16,8,1],[10,12,5,1],[23,12,5,1],[15,8,8,1],[8,4,22,1]], enemies: [[17,19,2],[7,15,1],[27,15,1],[12,11,1],[25,11,1],[17,7,2],[15,3,2]], dots: 21, startX: 2, startY: 23, exitX: 25, exitY: 2 },
+            { platforms: [[0,25,38,1],[10,21,5,1],[23,21,5,1],[15,18,8,1],[8,14,5,1],[25,14,5,1],[15,10,8,1],[10,6,5,1],[23,6,5,1],[15,2,8,1]], enemies: [[12,20,1],[25,20,1],[17,17,2],[10,13,1],[27,13,1],[17,9,2],[12,5,1],[25,5,1]], dots: 22, startX: 2, startY: 23, exitX: 18, exitY: 0 },
+            { platforms: [[0,25,38,1],[8,22,6,1],[24,22,6,1],[16,19,6,1],[5,16,8,1],[25,16,8,1],[12,13,14,1],[8,9,6,1],[24,9,6,1],[15,5,8,1]], enemies: [[10,21,1],[26,21,1],[18,18,2],[7,15,1],[27,15,1],[19,12,2],[10,8,1],[26,8,1],[17,4,2]], dots: 23, startX: 2, startY: 23, exitX: 18, exitY: 3 },
+            { platforms: [[0,25,38,1],[5,20,5,1],[28,20,5,1],[12,17,5,1],[21,17,5,1],[8,13,8,1],[22,13,8,1],[15,9,8,1],[5,5,5,1],[28,5,5,1],[15,1,8,1]], enemies: [[7,19,1],[30,19,1],[14,16,1],[23,16,1],[10,12,1],[24,12,1],[17,8,2],[7,4,1],[30,4,1],[17,0,2]], dots: 25, startX: 2, startY: 23, exitX: 18, exitY: -1 }
+        ];
+
+        let animFrame = 0;
+        let currentColor = '#1aff1a';
+
+        function initLevelSelect() {
+            const grid = document.getElementById('levelGrid');
+            grid.innerHTML = '';
+            for (let i = 1; i <= 19; i++) {
+                const btn = document.createElement('div');
+                btn.className = 'level-btn' + (i > gameState.unlockedLevels ? ' locked' : '');
+                btn.textContent = i;
+                if (i <= gameState.unlockedLevels) {
+                    btn.onclick = () => {
+                        gameState.currentLevel = i;
+                        startGame();
+                    };
+                }
+                grid.appendChild(btn);
+            }
+        }
+
+        function showMainMenu() {
+            document.getElementById('mainMenu').classList.remove('hidden');
+            document.getElementById('levelSelect').classList.add('hidden');
+            document.getElementById('instructions').classList.add('hidden');
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('gameOver').classList.add('hidden');
+            document.getElementById('levelComplete').classList.add('hidden');
+            gameState.playing = false;
+        }
+
+        function showLevelSelect() {
+            initLevelSelect();
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('levelSelect').classList.remove('hidden');
+        }
+
+        function showInstructions() {
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('instructions').classList.remove('hidden');
+        }
+
+        function startGame() {
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('levelSelect').classList.add('hidden');
+            document.getElementById('instructions').classList.add('hidden');
+            document.getElementById('gameOver').classList.add('hidden');
+            document.getElementById('levelComplete').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            gameState.playing = true;
+            loadLevel(gameState.currentLevel);
+            gameLoop();
+        }
+
+        function loadLevel(levelNum) {
+            const level = levels[levelNum - 1];
+            currentColor = levelColors[levelNum - 1];
+            
+            // Update HUD color
+            document.querySelector('.hud').style.color = currentColor;
+            document.querySelector('.hud').style.textShadow = `0 0 5px ${currentColor}, 0 0 10px ${currentColor}`;
+            
+            platforms = level.platforms.map(p => ({ x: p[0] * TILE_SIZE, y: p[1] * TILE_SIZE, w: p[2] * TILE_SIZE, h: p[3] * TILE_SIZE }));
+            
+            player = {
+                x: level.startX * TILE_SIZE,
+                y: level.startY * TILE_SIZE,
+                vx: 0,
+                vy: 0,
+                grounded: false,
+                facingRight: true
+            };
+
+            exit = { x: level.exitX * TILE_SIZE, y: level.exitY * TILE_SIZE };
+
+            enemies = level.enemies.map(e => ({
+                x: e[0] * TILE_SIZE,
+                y: e[1] * TILE_SIZE,
+                vx: e[2],
+                left: e[0] * TILE_SIZE - 60,
+                right: e[0] * TILE_SIZE + 60
+            }));
+
+            dots = [];
+            for (let i = 0; i < level.dots; i++) {
+                let x, y, safe;
+                do {
+                    safe = true;
+                    x = Math.random() * (canvas.width - 40) + 20;
+                    y = Math.random() * (canvas.height - 40) + 20;
+                    
+                    for (let p of platforms) {
+                        if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
+                            safe = false;
+                            break;
+                        }
+                    }
+                } while (!safe);
+                dots.push({ x, y, collected: false });
+            }
+
+            document.getElementById('levelNum').textContent = levelNum;
+            document.getElementById('lives').textContent = gameState.lives;
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('dots').textContent = '0';
+            document.getElementById('totalDots').textContent = level.dots;
+        }
+
+        function restartGame() {
+            gameState.score = 0;
+            gameState.lives = 3;
+            gameState.currentLevel = 1;
+            startGame();
+        }
+
+        function nextLevel() {
+            gameState.currentLevel++;
+            if (gameState.currentLevel > gameState.unlockedLevels) {
+                gameState.unlockedLevels = gameState.currentLevel;
+            }
+            if (gameState.currentLevel > 19) {
+                gameState.currentLevel = 1;
+                alert('CONGRATULATIONS! YOU COMPLETED ALL 19 LEVELS!');
+                showMainMenu();
+            } else {
+                startGame();
+            }
+        }
+
+        function gameLoop() {
+            if (!gameState.playing) return;
+
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function update() {
+            animFrame++;
+            
+            // Player movement
+            if (keys['ArrowLeft']) {
+                player.vx = -3;
+                player.facingRight = false;
+            } else if (keys['ArrowRight']) {
+                player.vx = 3;
+                player.facingRight = true;
+            } else {
+                player.vx = 0;
+            }
+
+            if (keys[' '] && player.grounded) {
+                player.vy = -12;
+                player.grounded = false;
+            }
+
+            player.vy += 0.5; // Gravity
+            player.x += player.vx;
+            player.y += player.vy;
+
+            // Collision with platforms
+            player.grounded = false;
+            for (let p of platforms) {
+                if (player.x + PLAYER_SIZE > p.x && player.x < p.x + p.w &&
+                    player.y + PLAYER_SIZE > p.y && player.y < p.y + p.h) {
+                    if (player.vy > 0) {
+                        player.y = p.y - PLAYER_SIZE;
+                        player.vy = 0;
+                        player.grounded = true;
+                    }
+                }
+            }
+
+            // Boundaries
+            if (player.x < 0) player.x = 0;
+            if (player.x > canvas.width - PLAYER_SIZE) player.x = canvas.width - PLAYER_SIZE;
+            if (player.y > canvas.height) {
+                gameState.lives--;
+                document.getElementById('lives').textContent = gameState.lives;
+                if (gameState.lives <= 0) {
+                    gameOver();
+                } else {
+                    loadLevel(gameState.currentLevel);
+                }
+            }
+
+            // Enemy movement
+            for (let e of enemies) {
+                e.x += e.vx;
+                if (e.x <= e.left || e.x >= e.right) e.vx *= -1;
+
+                // Enemy collision
+                if (Math.abs(player.x - e.x) < PLAYER_SIZE && Math.abs(player.y - e.y) < PLAYER_SIZE) {
+                    gameState.lives--;
+                    document.getElementById('lives').textContent = gameState.lives;
+                    if (gameState.lives <= 0) {
+                        gameOver();
+                    } else {
+                        loadLevel(gameState.currentLevel);
+                    }
+                }
+            }
+
+            // Dot collection
+            for (let d of dots) {
+                if (!d.collected && Math.abs(player.x - d.x) < PLAYER_SIZE && Math.abs(player.y - d.y) < PLAYER_SIZE) {
+                    d.collected = true;
+                    gameState.score += 10;
+                    document.getElementById('score').textContent = gameState.score;
+                    const collected = dots.filter(d => d.collected).length;
+                    document.getElementById('dots').textContent = collected;
+                }
+            }
+
+            // Exit check
+            const allDotsCollected = dots.every(d => d.collected);
+            if (allDotsCollected && Math.abs(player.x - exit.x) < PLAYER_SIZE && Math.abs(player.y - exit.y) < PLAYER_SIZE) {
+                levelComplete();
+            }
+        }
+
+        function draw() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw platforms
+            ctx.fillStyle = currentColor;
+            ctx.shadowBlur = 5;
+            ctx.shadowColor = currentColor;
+            for (let p of platforms) {
+                for (let i = 0; i < p.w / 4; i++) {
+                    for (let j = 0; j < p.h / 4; j++) {
+                        if ((i + j) % 2 === 0) {
+                            ctx.fillRect(p.x + i * 4, p.y + j * 4, 3, 3);
+                        }
+                    }
+                }
+            }
+
+            // Draw dots
+            for (let d of dots) {
+                if (!d.collected) {
+                    ctx.fillStyle = currentColor;
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, DOT_SIZE, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Draw exit
+            const allDotsCollected = dots.every(d => d.collected);
+            ctx.fillStyle = allDotsCollected ? '#ffff1a' : '#4d4d4d';
+            ctx.shadowColor = allDotsCollected ? '#ffff1a' : '#4d4d4d';
+            ctx.fillRect(exit.x, exit.y, TILE_SIZE, TILE_SIZE);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(exit.x + 4, exit.y + 4, 4, 12);
+            ctx.strokeRect(exit.x + 12, exit.y + 4, 4, 12);
+
+            // Draw enemies
+            ctx.fillStyle = '#ff1a1a';
+            ctx.shadowColor = '#ff1a1a';
+            for (let e of enemies) {
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        ctx.fillRect(e.x + i * 4, e.y + j * 4, 3, 3);
+                    }
+                }
+            }
+
+            // Draw player - animated running character
+            ctx.fillStyle = currentColor;
+            ctx.shadowColor = currentColor;
+            
+            const runCycle = Math.floor(animFrame / 8) % 4;
+            const isMoving = Math.abs(player.vx) > 0;
+            
+            if (player.facingRight) {
+                // Head
+                ctx.fillRect(player.x + 6, player.y + 2, 6, 4);
+                // Body
+                ctx.fillRect(player.x + 6, player.y + 6, 6, 6);
+                // Arms
+                if (isMoving) {
+                    if (runCycle === 0 || runCycle === 2) {
+                        ctx.fillRect(player.x + 3, player.y + 7, 3, 4);
+                        ctx.fillRect(player.x + 12, player.y + 9, 3, 3);
+                    } else {
+                        ctx.fillRect(player.x + 12, player.y + 7, 3, 4);
+                        ctx.fillRect(player.x + 3, player.y + 9, 3, 3);
+                    }
+                } else {
+                    ctx.fillRect(player.x + 3, player.y + 8, 3, 3);
+                    ctx.fillRect(player.x + 12, player.y + 8, 3, 3);
+                }
+                // Legs - running animation
+                if (isMoving) {
+                    if (runCycle === 0) {
+                        ctx.fillRect(player.x + 5, player.y + 12, 3, 4);
+                        ctx.fillRect(player.x + 10, player.y + 12, 3, 3);
+                    } else if (runCycle === 1) {
+                        ctx.fillRect(player.x + 6, player.y + 12, 3, 4);
+                        ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
+                    } else if (runCycle === 2) {
+                        ctx.fillRect(player.x + 10, player.y + 12, 3, 4);
+                        ctx.fillRect(player.x + 5, player.y + 12, 3, 3);
+                    } else {
+                        ctx.fillRect(player.x + 6, player.y + 12, 3, 4);
+                        ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
+                    }
+                } else {
+                    ctx.fillRect(player.x + 6, player.y + 12, 3, 4);
+                    ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
+                }
+            } else {
+                // Head
+                ctx.fillRect(player.x + 6, player.y + 2, 6, 4);
+                // Body
+                ctx.fillRect(player.x + 6, player.y + 6, 6, 6);
+                // Arms
+                if (isMoving) {
+                    if (runCycle === 0 || runCycle === 2) {
+                        ctx.fillRect(player.x + 12, player.y + 7, 3, 4);
+                        ctx.fillRect(player.x + 3, player.y + 9, 3, 3);
+                    } else {
+                        ctx.fillRect(player.x + 3, player.y + 7, 3, 4);
+                        ctx.fillRect(player.x + 12, player.y + 9, 3, 3);
+                    }
+                } else {
+                    ctx.fillRect(player.x + 3, player.y + 8, 3, 3);
+                    ctx.fillRect(player.x + 12, player.y + 8, 3, 3);
+                }
+                // Legs - running animation
+                if (isMoving) {
+                    if (runCycle === 0) {
+                        ctx.fillRect(player.x + 10, player.y + 12, 3, 4);
+                        ctx.fillRect(player.x + 5, player.y + 12, 3, 3);
+                    } else if (runCycle === 1) {
+                        ctx.fillRect(player.x + 6, player.y + 12, 3, 4);
+                        ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
+                    } else if (runCycle === 2) {
+                        ctx.fillRect(player.x + 5, player.y + 12, 3, 4);
+                        ctx.fillRect(player.x + 10, player.y + 12, 3, 3);
+                    } else {
+                        ctx.fillRect(player.x + 6, player.y + 12, 3, 4);
+                        ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
+                    }
+                } else {
+                    ctx.fillRect(player.x + 6, player.y + 12, 3, 4);
+                    ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
+                }
+            }
+
+            ctx.shadowBlur = 0;
+        }
+
+        function gameOver() {
+            gameState.playing = false;
+            document.getElementById('finalScore').textContent = gameState.score;
+            document.getElementById('gameOver').classList.remove('hidden');
+        }
+
+        function levelComplete() {
+            gameState.playing = false;
+            gameState.score += 100;
+            document.getElementById('levelScore').textContent = gameState.score;
+            document.getElementById('levelComplete').classList.remove('hidden');
+        }
+
+        document.addEventListener('keydown', e => {
+            keys[e.key] = true;
+            if (e.key === ' ') e.preventDefault();
+        });
+
+        document.addEventListener('keyup', e => {
+            keys[e.key] = false;
+        });
+
+        initLevelSelect();
+    </script>
+</body>
+</html>
