@@ -12,7 +12,7 @@
         }
 
         body {
-            background: #000;
+            background: linear-gradient(135deg, #000000 0%, #1a0000 100%);
             font-family: 'Courier New', monospace;
             overflow: hidden;
             display: flex;
@@ -27,7 +27,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000;
+            background: linear-gradient(135deg, #000000 0%, #1a0000 100%);
             z-index: 1000;
             display: flex;
             flex-direction: column;
@@ -42,6 +42,7 @@
             opacity: 0;
             margin: 5px 0;
             animation: fadeIn 0.3s forwards;
+            letter-spacing: 2px;
         }
 
         @keyframes fadeIn {
@@ -49,34 +50,41 @@
         }
 
         .boot-logo {
-            font-size: 48px;
-            margin: 20px 0;
+            font-size: 56px;
+            margin: 30px 0;
             opacity: 0;
-            letter-spacing: 8px;
-            animation: logoGlow 2s ease-in-out;
+            letter-spacing: 12px;
+            animation: logoGlow 3s ease-in-out;
+            background: linear-gradient(45deg, #ff0000, #ff6600, #ff0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         @keyframes logoGlow {
-            0% { opacity: 0; text-shadow: 0 0 0px #ff0000; }
-            50% { opacity: 1; text-shadow: 0 0 40px #ff0000, 0 0 60px #cc0000; }
-            100% { opacity: 1; text-shadow: 0 0 20px #ff0000; }
+            0% { opacity: 0; filter: drop-shadow(0 0 0px #ff0000); }
+            50% { opacity: 1; filter: drop-shadow(0 0 30px #ff0000) drop-shadow(0 0 60px #cc0000); }
+            100% { opacity: 1; filter: drop-shadow(0 0 20px #ff0000); }
         }
 
         .progress-bar {
-            width: 300px;
-            height: 20px;
-            border: 2px solid #ff0000;
-            margin: 20px 0;
+            width: 400px;
+            height: 25px;
+            border: 3px solid #ff0000;
+            margin: 30px 0;
             position: relative;
             opacity: 0;
+            background: #000;
+            border-radius: 5px;
+            overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
-            background: #ff0000;
+            background: linear-gradient(90deg, #ff0000, #ff6600, #ff0000);
             width: 0%;
             box-shadow: 0 0 20px #ff0000;
-            animation: fillProgress 2s ease-out forwards;
+            animation: fillProgress 2.5s ease-out forwards;
         }
 
         @keyframes fillProgress {
@@ -85,14 +93,18 @@
 
         .game-container {
             position: relative;
-            width: 800px;
-            height: 600px;
-            background: #0a0a0a;
-            border: 4px solid #cc0000;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.3), inset 0 0 50px rgba(0, 0, 0, 0.8);
+            width: 900px;
+            height: 650px;
+            background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
+            border: 5px solid #cc0000;
+            border-radius: 15px;
+            box-shadow: 
+                0 0 50px rgba(255, 0, 0, 0.5), 
+                inset 0 0 100px rgba(0, 0, 0, 0.8),
+                0 0 100px rgba(255, 0, 0, 0.2);
             opacity: 0;
             transform: scale(0.8);
-            animation: containerAppear 1s ease-out 3s forwards;
+            animation: containerAppear 1.5s ease-out 3.5s forwards;
         }
 
         @keyframes containerAppear {
@@ -109,41 +121,46 @@
             background: linear-gradient(
                 to bottom,
                 transparent 50%,
-                rgba(255, 0, 0, 0.1) 51%
+                rgba(255, 0, 0, 0.05) 51%
             );
-            background-size: 100% 4px;
+            background-size: 100% 3px;
             pointer-events: none;
             z-index: 10;
-            animation: scan 8s linear infinite;
+            animation: scan 6s linear infinite;
+            border-radius: 10px;
         }
 
         @keyframes scan {
             0% { transform: translateY(0); }
-            100% { transform: translateY(4px); }
+            100% { transform: translateY(3px); }
         }
 
         .screen {
             position: relative;
             width: 100%;
             height: 100%;
-            padding: 20px;
+            padding: 25px;
         }
 
         .hud {
             color: #ff0000;
-            text-shadow: 0 0 5px #ff0000, 0 0 10px #cc0000;
-            font-size: 18px;
+            text-shadow: 0 0 8px #ff0000, 0 0 15px #cc0000;
+            font-size: 20px;
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+            font-weight: bold;
         }
 
         canvas {
             display: block;
-            background: #000;
-            border: 2px solid #cc0000;
-            box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.1);
+            background: radial-gradient(circle at center, #111111 0%, #000000 100%);
+            border: 3px solid #cc0000;
+            border-radius: 10px;
+            box-shadow: 
+                inset 0 0 30px rgba(255, 0, 0, 0.1),
+                0 0 20px rgba(255, 0, 0, 0.3);
         }
 
         .menu {
@@ -153,30 +170,40 @@
             transform: translate(-50%, -50%);
             text-align: center;
             color: #ff0000;
-            text-shadow: 0 0 10px #ff0000;
+            text-shadow: 0 0 15px #ff0000;
             z-index: 5;
         }
 
         .menu h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            letter-spacing: 4px;
-            animation: glow 2s ease-in-out infinite;
+            font-size: 56px;
+            margin-bottom: 30px;
+            letter-spacing: 6px;
+            animation: glow 2.5s ease-in-out infinite;
+            background: linear-gradient(45deg, #ff0000, #ff6600, #ff0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         @keyframes glow {
-            0%, 100% { text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000; }
-            50% { text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000, 0 0 60px #cc0000; }
+            0%, 100% { 
+                filter: drop-shadow(0 0 10px #ff0000) drop-shadow(0 0 20px #ff0000); 
+            }
+            50% { 
+                filter: drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 50px #ff0000) drop-shadow(0 0 75px #cc0000); 
+            }
         }
 
         .menu-item {
-            font-size: 24px;
-            margin: 15px 0;
+            font-size: 28px;
+            margin: 20px 0;
             cursor: pointer;
-            transition: all 0.3s;
-            letter-spacing: 3px;
+            transition: all 0.4s;
+            letter-spacing: 4px;
             opacity: 0;
-            animation: menuItemAppear 0.5s forwards;
+            animation: menuItemAppear 0.6s forwards;
+            padding: 10px 20px;
+            border-radius: 10px;
         }
 
         .menu-item:nth-child(2) { animation-delay: 0.2s; }
@@ -196,35 +223,40 @@
         }
 
         .menu-item:hover {
-            text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+            text-shadow: 0 0 25px #ff0000, 0 0 50px #ff0000;
             transform: scale(1.1);
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid rgba(255, 0, 0, 0.3);
         }
 
         .difficulty-select {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            max-width: 600px;
-            margin: 20px auto;
+            gap: 25px;
+            max-width: 700px;
+            margin: 25px auto;
         }
 
         .difficulty-btn {
-            padding: 20px;
-            background: #0a0a0a;
-            border: 2px solid #cc0000;
+            padding: 25px;
+            background: radial-gradient(circle, #0a0a0a 0%, #000000 100%);
+            border: 3px solid #cc0000;
+            border-radius: 15px;
             color: #ff0000;
             cursor: pointer;
-            font-size: 20px;
-            transition: all 0.3s;
+            font-size: 22px;
+            transition: all 0.4s;
             font-family: 'Courier New', monospace;
             text-align: center;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
         }
 
         .difficulty-btn:hover {
-            background: #cc0000;
+            background: radial-gradient(circle, #cc0000 0%, #aa0000 100%);
             color: #000;
-            box-shadow: 0 0 20px #ff0000;
-            transform: scale(1.05);
+            box-shadow: 0 0 40px #ff0000;
+            transform: scale(1.05) translateY(-5px);
+            border-color: #ff0000;
         }
 
         .hidden {
@@ -238,34 +270,42 @@
             transform: translate(-50%, -50%);
             color: #ff0000;
             text-align: center;
-            font-size: 36px;
-            text-shadow: 0 0 20px #ff0000;
+            font-size: 42px;
+            text-shadow: 0 0 25px #ff0000;
             z-index: 5;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid #ff0000;
         }
 
         .troll-message {
             position: absolute;
-            top: 20%;
+            top: 15%;
             left: 50%;
             transform: translateX(-50%);
             color: #ffff00;
-            font-size: 24px;
-            text-shadow: 0 0 10px #ffff00;
+            font-size: 28px;
+            text-shadow: 0 0 15px #ffff00;
             z-index: 15;
             opacity: 0;
             pointer-events: none;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 25px;
+            border-radius: 10px;
+            border: 2px solid #ffff00;
         }
 
         .troll-message.show {
             opacity: 1;
-            animation: trollFade 3s ease-out;
+            animation: trollFade 3.5s ease-out;
         }
 
         @keyframes trollFade {
-            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            0% { opacity: 0; transform: translateX(-50%) translateY(30px) scale(0.8); }
+            15% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+            85% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-30px) scale(0.8); }
         }
 
         .pixel-perfect {
@@ -273,17 +313,17 @@
             image-rendering: crisp-edges;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             .game-container {
                 width: 90vw;
-                height: 70vh;
-                max-width: 800px;
-                max-height: 600px;
+                height: 75vh;
+                max-width: 900px;
+                max-height: 650px;
             }
             
             canvas {
-                width: calc(100% - 40px);
-                height: calc(100% - 80px);
+                width: calc(100% - 50px);
+                height: calc(100% - 100px);
             }
         }
     </style>
@@ -291,15 +331,15 @@
 <body>
     <div class="boot-screen" id="bootScreen">
         <div class="boot-lines">
-            <div class="boot-line" style="animation-delay: 0s;">INITIALIZING SYSTEM...</div>
-            <div class="boot-line" style="animation-delay: 0.3s;">LOADING GRAPHICS ENGINE...</div>
-            <div class="boot-line" style="animation-delay: 0.6s;">CALIBRATING CONTROLLERS...</div>
-            <div class="boot-line" style="animation-delay: 0.9s;">LOADING LEVEL DATA...</div>
-            <div class="boot-line" style="animation-delay: 1.2s;">CHECKING MEMORY... OK</div>
-            <div class="boot-line" style="animation-delay: 1.5s;">SYSTEM READY</div>
+            <div class="boot-line" style="animation-delay: 0s;">INITIALIZING NEON SYSTEMS...</div>
+            <div class="boot-line" style="animation-delay: 0.4s;">LOADING ENHANCED GRAPHICS ENGINE...</div>
+            <div class="boot-line" style="animation-delay: 0.8s;">CALIBRATING QUANTUM CONTROLLERS...</div>
+            <div class="boot-line" style="animation-delay: 1.2s;">LOADING REALISTIC PHYSICS...</div>
+            <div class="boot-line" style="animation-delay: 1.6s;">CHECKING MEMORY... ENHANCED</div>
+            <div class="boot-line" style="animation-delay: 2.0s;">SYSTEM READY - NEON MODE ACTIVATED</div>
         </div>
-        <div class="boot-logo" style="animation-delay: 1.8s;">◢ NEON RUNNER ◣</div>
-        <div class="progress-bar" style="animation-delay: 2s;">
+        <div class="boot-logo" style="animation-delay: 2.4s;">◢ NEON RUNNER ◣</div>
+        <div class="progress-bar" style="animation-delay: 2.8s;">
             <div class="progress-fill"></div>
         </div>
     </div>
@@ -318,33 +358,33 @@
             <h1>SELECT DIFFICULTY</h1>
             <div class="difficulty-select">
                 <div class="difficulty-btn" onclick="startGame('easy')">
-                    <div style="font-size: 24px; margin-bottom: 10px;">😊</div>
+                    <div style="font-size: 32px; margin-bottom: 15px;">😊</div>
                     <div>EASY</div>
-                    <div style="font-size: 14px; margin-top: 5px;">Chill Mode</div>
+                    <div style="font-size: 16px; margin-top: 8px;">Chill Mode</div>
                 </div>
                 <div class="difficulty-btn" onclick="startGame('medium')">
-                    <div style="font-size: 24px; margin-bottom: 10px;">😐</div>
+                    <div style="font-size: 32px; margin-bottom: 15px;">😐</div>
                     <div>MEDIUM</div>
-                    <div style="font-size: 14px; margin-top: 5px;">Normal Challenge</div>
+                    <div style="font-size: 16px; margin-top: 8px;">Normal Challenge</div>
                 </div>
                 <div class="difficulty-btn" onclick="startGame('hard')">
-                    <div style="font-size: 24px; margin-bottom: 10px;">😈</div>
+                    <div style="font-size: 32px; margin-bottom: 15px;">😈</div>
                     <div>HARD</div>
-                    <div style="font-size: 14px; margin-top: 5px;">Troll Mode</div>
+                    <div style="font-size: 16px; margin-top: 8px;">Troll Mode</div>
                 </div>
             </div>
-            <div class="menu-item" onclick="showMainMenu()" style="margin-top: 20px;">◄ BACK</div>
+            <div class="menu-item" onclick="showMainMenu()" style="margin-top: 25px;">◄ BACK</div>
         </div>
 
         <div id="instructions" class="menu hidden">
             <h1>INSTRUCTIONS</h1>
-            <div style="font-size: 18px; line-height: 1.8; max-width: 500px; margin: 20px auto;">
+            <div style="font-size: 20px; line-height: 2; max-width: 600px; margin: 25px auto;">
                 <p>ARROW KEYS - MOVE</p>
                 <p>SPACE - JUMP</p>
                 <p>COLLECT ALL DOTS</p>
                 <p>AVOID ENEMIES</p>
                 <p>REACH THE EXIT</p>
-                <p style="color: #ffff00; margin-top: 20px;">⚠️ HARD MODE HAS SURPRISES!</p>
+                <p style="color: #ffff00; margin-top: 25px;">⚠️ HARD MODE HAS SURPRISES!</p>
             </div>
             <div class="menu-item" onclick="showMainMenu()">◄ BACK</div>
         </div>
@@ -357,20 +397,20 @@
                 <div>DOTS: <span id="dots">0</span>/<span id="totalDots">0</span></div>
                 <div>MODE: <span id="difficultyMode">EASY</span></div>
             </div>
-            <canvas id="gameCanvas" width="760" height="520" class="pixel-perfect"></canvas>
+            <canvas id="gameCanvas" width="850" height="570" class="pixel-perfect"></canvas>
             <div id="trollMessage" class="troll-message"></div>
         </div>
 
         <div id="gameOver" class="game-over hidden">
             <h2>GAME OVER</h2>
-            <p style="font-size: 20px; margin: 20px 0;">FINAL SCORE: <span id="finalScore">0</span></p>
+            <p style="font-size: 24px; margin: 25px 0;">FINAL SCORE: <span id="finalScore">0</span></p>
             <div class="menu-item" onclick="restartGame()">► RETRY</div>
             <div class="menu-item" onclick="showMainMenu()">► MAIN MENU</div>
         </div>
 
         <div id="levelComplete" class="level-complete hidden">
             <h2>LEVEL COMPLETE!</h2>
-            <p style="font-size: 20px; margin: 20px 0;">SCORE: <span id="levelScore">0</span></p>
+            <p style="font-size: 24px; margin: 25px 0;">SCORE: <span id="levelScore">0</span></p>
             <div class="menu-item" onclick="nextLevel()">► NEXT LEVEL</div>
             <div class="menu-item" onclick="showMainMenu()">► MAIN MENU</div>
         </div>
@@ -380,11 +420,11 @@
         // Boot sequence
         setTimeout(() => {
             document.getElementById('bootScreen').style.opacity = '0';
-            document.getElementById('bootScreen').style.transition = 'opacity 0.5s';
+            document.getElementById('bootScreen').style.transition = 'opacity 0.8s';
             setTimeout(() => {
                 document.getElementById('bootScreen').style.display = 'none';
-            }, 500);
-        }, 4000);
+            }, 800);
+        }, 5000);
 
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -397,9 +437,9 @@
             difficulty: 'easy'
         };
 
-        const TILE_SIZE = 20;
-        const PLAYER_SIZE = 16;
-        const DOT_SIZE = 6;
+        const TILE_SIZE = 25;
+        const PLAYER_SIZE = 20;
+        const DOT_SIZE = 8;
 
         let player = { x: 0, y: 0, vx: 0, vy: 0, grounded: false };
         let dots = [];
@@ -408,24 +448,24 @@
         let exit = { x: 0, y: 0 };
         let keys = {};
         let animFrame = 0;
-        let trollTimer = 0;
+        let particles = [];
 
-        // Difficulty-based level sets
+        // Enhanced level sets with better spacing
         const levelSets = {
             easy: [
-                { platforms: [[0,25,38,1],[10,20,18,1],[5,15,8,1],[25,15,8,1]], enemies: [], dots: 3, startX: 2, startY: 23, exitX: 35, exitY: 13 },
-                { platforms: [[0,25,38,1],[8,20,6,1],[24,20,6,1],[15,15,8,1]], enemies: [[12,19,0.5]], dots: 4, startX: 2, startY: 23, exitX: 30, exitY: 13 },
-                { platforms: [[0,25,38,1],[5,20,10,1],[20,15,10,1],[10,10,18,1]], enemies: [[7,19,0.5],[22,14,0.5]], dots: 5, startX: 2, startY: 23, exitX: 25, exitY: 8 }
+                { platforms: [[0,22,34,1],[8,18,18,1],[4,14,8,1],[22,14,8,1],[12,10,10,1]], enemies: [], dots: 3, startX: 2, startY: 20, exitX: 30, exitY: 8 },
+                { platforms: [[0,22,34,1],[6,18,6,1],[20,18,6,1],[12,14,10,1],[8,10,16,1]], enemies: [[14,17,0.5]], dots: 4, startX: 2, startY: 20, exitX: 28, exitY: 8 },
+                { platforms: [[0,22,34,1],[4,18,8,1],[16,16,8,1],[26,14,6,1],[10,10,16,1]], enemies: [[6,17,0.5],[18,15,0.5]], dots: 5, startX: 2, startY: 20, exitX: 28, exitY: 8 }
             ],
             medium: [
-                { platforms: [[0,25,38,1],[5,20,10,1],[20,15,10,1],[5,10,8,1],[25,8,8,1]], enemies: [[15,19,1]], dots: 5, startX: 2, startY: 23, exitX: 30, exitY: 6 },
-                { platforms: [[0,25,38,1],[3,20,5,1],[10,18,8,1],[20,15,6,1],[28,12,8,1]], enemies: [[12,17,1],[22,14,1]], dots: 6, startX: 2, startY: 23, exitX: 32, exitY: 10 },
-                { platforms: [[0,25,38,1],[8,20,6,1],[24,20,6,1],[15,15,8,1],[10,10,18,1]], enemies: [[10,19,1],[26,19,1],[17,14,1]], dots: 7, startX: 2, startY: 23, exitX: 20, exitY: 8 }
+                { platforms: [[0,22,34,1],[4,18,8,1],[16,16,8,1],[26,14,6,1],[8,10,6,1],[20,8,10,1]], enemies: [[12,17,1]], dots: 5, startX: 2, startY: 20, exitX: 26, exitY: 6 },
+                { platforms: [[0,22,34,1],[2,18,4,1],[8,16,6,1],[18,14,6,1],[26,12,6,1],[12,8,12,1]], enemies: [[10,15,1],[20,13,1]], dots: 6, startX: 2, startY: 20, exitX: 28, exitY: 6 },
+                { platforms: [[0,22,34,1],[6,18,6,1],[20,18,6,1],[12,14,10,1],[6,10,6,1],[22,10,6,1],[14,6,6,1]], enemies: [[8,17,1],[22,17,1],[14,13,1]], dots: 7, startX: 2, startY: 20, exitX: 16, exitY: 4 }
             ],
             hard: [
-                { platforms: [[0,25,38,1],[5,20,3,1],[15,18,3,1],[25,16,3,1],[10,12,3,1],[20,10,3,1],[30,8,3,1]], enemies: [[7,19,2],[17,17,2],[27,15,2]], dots: 8, startX: 2, startY: 23, exitX: 32, exitY: 6, troll: true },
-                { platforms: [[0,25,38,1],[10,20,5,1],[23,18,5,1],[8,15,5,1],[25,13,5,1],[15,10,8,1]], enemies: [[12,19,2],[25,17,2],[10,14,2],[27,12,2]], dots: 9, startX: 2, startY: 23, exitX: 19, exitY: 8, troll: true },
-                { platforms: [[0,25,38,1],[5,22,3,1],[12,20,3,1],[19,18,3,1],[26,16,3,1],[33,14,3,1],[15,10,8,1]], enemies: [[7,21,2],[14,19,2],[21,17,2],[28,15,2],[35,13,2]], dots: 10, startX: 2, startY: 23, exitX: 19, exitY: 8, troll: true }
+                { platforms: [[0,22,34,1],[4,18,3,1],[12,16,3,1],[20,14,3,1],[28,12,3,1],[8,10,3,1],[16,8,3,1],[24,6,3,1]], enemies: [[6,17,2],[14,15,2],[22,13,2]], dots: 8, startX: 2, startY: 20, exitX: 26, exitY: 4, troll: true },
+                { platforms: [[0,22,34,1],[8,18,4,1],[20,16,4,1],[6,14,4,1],[22,12,4,1],[12,10,4,1],[18,8,4,1],[10,6,4,1]], enemies: [[10,17,2],[22,15,2],[8,13,2],[24,11,2]], dots: 9, startX: 2, startY: 20, exitX: 12, exitY: 4, troll: true },
+                { platforms: [[0,22,34,1],[4,19,2,1],[10,17,2,1],[16,15,2,1],[22,13,2,1],[28,11,2,1],[6,9,2,1],[14,7,2,1],[22,5,2,1]], enemies: [[6,18,2],[12,16,2],[18,14,2],[24,12,2],[30,10,2]], dots: 10, startX: 2, startY: 20, exitX: 24, exitY: 3, troll: true }
             ]
         };
 
@@ -445,13 +485,284 @@
         let invisiblePlatforms = [];
         let fakeExits = [];
 
+        // Enhanced drawing functions
+        function drawGradientRect(x, y, w, h, color1, color2) {
+            const gradient = ctx.createLinearGradient(x, y, x, y + h);
+            gradient.addColorStop(0, color1);
+            gradient.addColorStop(1, color2);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(x, y, w, h);
+        }
+
+        function drawNeonRect(x, y, w, h, color, glowColor) {
+            // Outer glow
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = glowColor;
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, w, h);
+
+            // Inner highlight
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.fillRect(x + 1, y + 1, w - 2, 3);
+        }
+
+        function drawRealisticPlayer() {
+            const x = player.x;
+            const y = player.y;
+            const isMoving = Math.abs(player.vx) > 0;
+
+            // Player glow effect
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = '#ff0000';
+
+            if (player.facingRight) {
+                // Head with gradient
+                drawGradientRect(x + 6, y, 8, 8, '#ff4444', '#cc0000');
+
+                // Body with gradient
+                drawGradientRect(x + 5, y + 8, 10, 8, '#ff2222', '#aa0000');
+
+                // Arms with animation
+                if (isMoving) {
+                    const armSwing = Math.sin(animFrame * 0.4) * 4;
+                    drawGradientRect(x + 1, y + 9 + armSwing, 4, 5, '#ff3333', '#bb0000');
+                    drawGradientRect(x + 15, y + 9 - armSwing, 4, 5, '#ff3333', '#bb0000');
+                } else {
+                    drawGradientRect(x + 1, y + 10, 4, 4, '#ff3333', '#bb0000');
+                    drawGradientRect(x + 15, y + 10, 4, 4, '#ff3333', '#bb0000');
+                }
+
+                // Legs with realistic running animation
+                if (isMoving) {
+                    const legCycle = Math.sin(animFrame * 0.6);
+                    const leg1Y = y + 16 + Math.abs(legCycle) * 3;
+                    const leg2Y = y + 16 + Math.abs(-legCycle) * 3;
+                    drawGradientRect(x + 4, leg1Y, 4, 5, '#ff1111', '#990000');
+                    drawGradientRect(x + 12, leg2Y, 4, 5, '#ff1111', '#990000');
+                } else {
+                    drawGradientRect(x + 5, y + 16, 4, 5, '#ff1111', '#990000');
+                    drawGradientRect(x + 11, y + 16, 4, 5, '#ff1111', '#990000');
+                }
+
+                // Eyes
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(x + 7, y + 2, 2, 2);
+                ctx.fillRect(x + 11, y + 2, 2, 2);
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(x + 8, y + 2, 1, 1);
+                ctx.fillRect(x + 12, y + 2, 1, 1);
+            } else {
+                // Mirror for left-facing
+                drawGradientRect(x + 6, y, 8, 8, '#ff4444', '#cc0000');
+                drawGradientRect(x + 5, y + 8, 10, 8, '#ff2222', '#aa0000');
+
+                if (isMoving) {
+                    const armSwing = Math.sin(animFrame * 0.4) * 4;
+                    drawGradientRect(x + 15, y + 9 + armSwing, 4, 5, '#ff3333', '#bb0000');
+                    drawGradientRect(x + 1, y + 9 - armSwing, 4, 5, '#ff3333', '#bb0000');
+                } else {
+                    drawGradientRect(x + 1, y + 10, 4, 4, '#ff3333', '#bb0000');
+                    drawGradientRect(x + 15, y + 10, 4, 4, '#ff3333', '#bb0000');
+                }
+
+                if (isMoving) {
+                    const legCycle = Math.sin(animFrame * 0.6);
+                    const leg1Y = y + 16 + Math.abs(-legCycle) * 3;
+                    const leg2Y = y + 16 + Math.abs(legCycle) * 3;
+                    drawGradientRect(x + 12, leg1Y, 4, 5, '#ff1111', '#990000');
+                    drawGradientRect(x + 4, leg2Y, 4, 5, '#ff1111', '#990000');
+                } else {
+                    drawGradientRect(x + 5, y + 16, 4, 5, '#ff1111', '#990000');
+                    drawGradientRect(x + 11, y + 16, 4, 5, '#ff1111', '#990000');
+                }
+
+                // Eyes
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(x + 7, y + 2, 2, 2);
+                ctx.fillRect(x + 11, y + 2, 2, 2);
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(x + 7, y + 2, 1, 1);
+                ctx.fillRect(x + 11, y + 2, 1, 1);
+            }
+
+            ctx.shadowBlur = 0;
+        }
+
+        function addParticle(x, y, vx, vy, color, life) {
+            particles.push({ x, y, vx, vy, color, life, maxLife: life });
+        }
+
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.2; // gravity
+                p.life--;
+                
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        function drawParticles() {
+            for (let p of particles) {
+                const alpha = p.life / p.maxLife;
+                ctx.fillStyle = p.color.replace('1)', alpha + ')');
+                ctx.fillRect(p.x, p.y, 2, 2);
+            }
+        }
+
+        function draw() {
+            // Enhanced background
+            const bgGradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, canvas.width);
+            bgGradient.addColorStop(0, '#1a1a1a');
+            bgGradient.addColorStop(1, '#000000');
+            ctx.fillStyle = bgGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw platforms with enhanced neon effect
+            for (let p of platforms) {
+                if (p.visible) {
+                    drawNeonRect(p.x, p.y, p.w, p.h, '#ff0000', '#ff4444');
+                    // Add platform texture
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+                    for (let i = 0; i < p.w; i += 10) {
+                        for (let j = 0; j < p.h; j += 5) {
+                            if ((i + j) % 20 === 0) {
+                                ctx.fillRect(p.x + i, p.y + j, 3, 2);
+                            }
+                        }
+                    }
+                } else {
+                    // Invisible platforms with very faint outline
+                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeRect(p.x, p.y, p.w, p.h);
+                    ctx.setLineDash([]);
+                }
+            }
+
+            // Draw dots with enhanced pulsing glow
+            for (let d of dots) {
+                if (!d.collected) {
+                    const pulse = Math.sin(animFrame * 0.15) * 0.4 + 0.8;
+                    ctx.shadowBlur = 12 * pulse;
+                    ctx.shadowColor = '#ff0000';
+                    ctx.fillStyle = '#ff0000';
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, DOT_SIZE * pulse, 0, Math.PI * 2);
+                    ctx.fill();
+                    // Inner bright core
+                    ctx.shadowBlur = 0;
+                    ctx.fillStyle = '#ffaaaa';
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, DOT_SIZE * 0.6, 0, Math.PI * 2);
+                    ctx.fill();
+                    // Sparkle effect
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(d.x - 2, d.y - 2, 1, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Draw fake exits with orange glow
+            for (let fakeExit of fakeExits) {
+                drawNeonRect(fakeExit.x, fakeExit.y, TILE_SIZE, TILE_SIZE, '#ff6600', '#ffaa00');
+                // Fake exit symbol
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(fakeExit.x + 8, fakeExit.y + 5, 9, 3);
+                ctx.fillRect(fakeExit.x + 8, fakeExit.y + 17, 9, 3);
+            }
+
+            // Draw real exit with enhanced animation
+            const allDotsCollected = dots.every(d => d.collected);
+            if (allDotsCollected) {
+                drawNeonRect(exit.x, exit.y, TILE_SIZE, TILE_SIZE, '#ffff00', '#ffff88');
+                // Exit door animation
+                const doorOpen = Math.sin(animFrame * 0.3) * 3 + 3;
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(exit.x + 5, exit.y + 5, 5 - doorOpen, 15);
+                ctx.fillRect(exit.x + 15 + doorOpen, exit.y + 5, 5 - doorOpen, 15);
+                // Light beam
+                ctx.fillStyle = 'rgba(255, 255, 0, 0.3)';
+                ctx.fillRect(exit.x + 10 - doorOpen, exit.y + 5, doorOpen * 2, 15);
+            } else {
+                drawNeonRect(exit.x, exit.y, TILE_SIZE, TILE_SIZE, '#666666', '#888888');
+                // Closed door
+                ctx.fillStyle = '#333333';
+                ctx.fillRect(exit.x + 5, exit.y + 5, 5, 15);
+                ctx.fillRect(exit.x + 15, exit.y + 5, 5, 15);
+            }
+
+            // Draw enemies with enhanced menacing appearance
+            for (let e of enemies) {
+                if (e.visible) {
+                    const bounce = Math.sin(animFrame * 0.4) * 4;
+                    const enemyY = e.y + bounce;
+
+                    // Enemy glow
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = '#ff6600';
+
+                    // Enemy body with spikes
+                    drawGradientRect(e.x + 3, enemyY + 3, 14, 14, '#ff4400', '#cc2200');
+
+                    // Spikes
+                    ctx.fillStyle = '#ff6600';
+                    ctx.fillRect(e.x, enemyY + 8, 3, 6);
+                    ctx.fillRect(e.x + 17, enemyY + 8, 3, 6);
+                    ctx.fillRect(e.x + 8, enemyY, 6, 3);
+                    ctx.fillRect(e.x + 8, enemyY + 17, 6, 3);
+
+                    // Evil eyes with animation
+                    const eyeGlow = Math.sin(animFrame * 0.2) * 0.3 + 0.7;
+                    ctx.fillStyle = `rgba(255, 255, 0, ${eyeGlow})`;
+                    ctx.fillRect(e.x + 5, enemyY + 5, 3, 3);
+                    ctx.fillRect(e.x + 12, enemyY + 5, 3, 3);
+                    ctx.fillStyle = '#ff0000';
+                    ctx.fillRect(e.x + 6, enemyY + 6, 2, 2);
+                    ctx.fillRect(e.x + 13, enemyY + 6, 2, 2);
+                }
+            }
+
+            // Draw player
+            drawRealisticPlayer();
+
+            // Add enhanced particle effects
+            if (Math.abs(player.vx) > 0 && player.grounded) {
+                for (let i = 0; i < 2; i++) {
+                    addParticle(
+                        player.x + 10 + (Math.random() - 0.5) * 20,
+                        player.y + 20 + Math.random() * 3,
+                        (Math.random() - 0.5) * 2,
+                        -Math.random() * 2,
+                        'rgba(255, ' + Math.floor(Math.random() * 100) + ', 0, 1)',
+                        30
+                    );
+                }
+            }
+
+            updateParticles();
+            drawParticles();
+
+            ctx.shadowBlur = 0;
+        }
+
+        // Rest of the game logic remains the same but with enhanced functions
         function showTrollMessage(message) {
             const trollDiv = document.getElementById('trollMessage');
             trollDiv.textContent = message;
             trollDiv.classList.add('show');
             setTimeout(() => {
                 trollDiv.classList.remove('show');
-            }, 3000);
+            }, 3500);
         }
 
         function showMainMenu() {
@@ -502,6 +813,7 @@
             speedMultiplier = 1;
             invisiblePlatforms = [];
             fakeExits = [];
+            particles = [];
             
             platforms = level.platforms.map(p => ({ 
                 x: p[0] * TILE_SIZE, 
@@ -525,9 +837,9 @@
             enemies = level.enemies.map(e => ({
                 x: e[0] * TILE_SIZE,
                 y: e[1] * TILE_SIZE,
-                vx: e[2] * (gameState.difficulty === 'easy' ? 0.5 : 1),
-                left: e[0] * TILE_SIZE - 60,
-                right: e[0] * TILE_SIZE + 60,
+                vx: e[2] * (gameState.difficulty === 'easy' ? 0.7 : 1),
+                left: e[0] * TILE_SIZE - 80,
+                right: e[0] * TILE_SIZE + 80,
                 visible: true
             }));
 
@@ -538,8 +850,8 @@
                 let x, y, safe;
                 do {
                     safe = true;
-                    x = Math.random() * (canvas.width - 40) + 20;
-                    y = Math.random() * (canvas.height - 40) + 20;
+                    x = Math.random() * (canvas.width - 60) + 30;
+                    y = Math.random() * (canvas.height - 60) + 30;
                     
                     for (let p of platforms) {
                         if (x > p.x && x < p.x + p.w && y > p.y && y < p.y + p.h) {
@@ -566,8 +878,8 @@
                             break;
                         case 1: // Fake exit
                             fakeExits.push({
-                                x: exit.x + (Math.random() - 0.5) * 100,
-                                y: exit.y + (Math.random() - 0.5) * 100
+                                x: exit.x + (Math.random() - 0.5) * 150,
+                                y: exit.y + (Math.random() - 0.5) * 150
                             });
                             showTrollMessage(trollMessages[1]);
                             break;
@@ -576,17 +888,17 @@
                             showTrollMessage(trollMessages[3]);
                             setTimeout(() => {
                                 controlsReversed = false;
-                            }, 5000);
+                            }, 6000);
                             break;
                         case 3: // Speed change
-                            speedMultiplier = Math.random() > 0.5 ? 2 : 0.5;
+                            speedMultiplier = Math.random() > 0.5 ? 2.5 : 0.4;
                             showTrollMessage(trollMessages[4]);
                             setTimeout(() => {
                                 speedMultiplier = 1;
-                            }, 3000);
+                            }, 4000);
                             break;
                     }
-                }, Math.random() * 3000 + 2000);
+                }, Math.random() * 4000 + 3000);
             }
 
             document.getElementById('levelNum').textContent = levelNum;
@@ -607,7 +919,7 @@
             gameState.currentLevel++;
             const maxLevels = levelSets[gameState.difficulty].length;
             if (gameState.currentLevel > maxLevels) {
-                alert(`CONGRATULATIONS! YOU COMPLETED ALL ${maxLevels} ${gameState.difficulty.toUpperCase()} LEVELS!`);
+                alert(`🎉 CONGRATULATIONS! YOU COMPLETED ALL ${maxLevels} ${gameState.difficulty.toUpperCase()} LEVELS! 🎉`);
                 showMainMenu();
             } else {
                 loadLevel(gameState.currentLevel);
@@ -625,11 +937,10 @@
 
         function update() {
             animFrame++;
-            trollTimer++;
 
-            // Player movement with difficulty adjustments
-            let moveSpeed = 3 * speedMultiplier;
-            if (gameState.difficulty === 'easy') moveSpeed = 2;
+            // Enhanced player movement
+            let moveSpeed = 4 * speedMultiplier;
+            if (gameState.difficulty === 'easy') moveSpeed = 3;
             
             const leftKey = controlsReversed ? 'ArrowRight' : 'ArrowLeft';
             const rightKey = controlsReversed ? 'ArrowLeft' : 'ArrowRight';
@@ -641,19 +952,30 @@
                 player.vx = moveSpeed;
                 player.facingRight = true;
             } else {
-                player.vx = 0;
+                player.vx *= 0.85; // Smooth deceleration
             }
 
             if (keys[' '] && player.grounded) {
-                player.vy = gameState.difficulty === 'easy' ? -10 : -12;
+                player.vy = gameState.difficulty === 'easy' ? -12 : -14;
                 player.grounded = false;
+                // Jump particles
+                for (let i = 0; i < 5; i++) {
+                    addParticle(
+                        player.x + 10 + (Math.random() - 0.5) * 20,
+                        player.y + 20,
+                        (Math.random() - 0.5) * 4,
+                        Math.random() * 2,
+                        'rgba(255, 0, 0, 1)',
+                        20
+                    );
+                }
             }
 
-            player.vy += 0.5; // Gravity
+            player.vy += 0.6; // Gravity
             player.x += player.vx;
             player.y += player.vy;
 
-            // Collision with platforms
+            // Enhanced collision with platforms
             player.grounded = false;
             for (let p of platforms) {
                 if (p.visible && player.x + PLAYER_SIZE > p.x && player.x < p.x + p.w &&
@@ -662,6 +984,17 @@
                         player.y = p.y - PLAYER_SIZE;
                         player.vy = 0;
                         player.grounded = true;
+                        // Landing particles
+                        for (let i = 0; i < 3; i++) {
+                            addParticle(
+                                player.x + 10 + (Math.random() - 0.5) * 20,
+                                player.y + 20,
+                                (Math.random() - 0.5) * 3,
+                                -Math.random() * 3,
+                                'rgba(255, 100, 0, 1)',
+                                15
+                            );
+                        }
                     }
                 }
             }
@@ -679,14 +1012,25 @@
                 }
             }
 
-            // Enemy movement and collision
+            // Enhanced enemy movement and collision
             for (let e of enemies) {
                 if (e.visible) {
                     e.x += e.vx;
                     if (e.x <= e.left || e.x >= e.right) e.vx *= -1;
 
-                    // Enemy collision
+                    // Enemy collision with explosion effect
                     if (Math.abs(player.x - e.x) < PLAYER_SIZE && Math.abs(player.y - e.y) < PLAYER_SIZE) {
+                        // Death particles
+                        for (let i = 0; i < 10; i++) {
+                            addParticle(
+                                player.x + 10,
+                                player.y + 10,
+                                (Math.random() - 0.5) * 8,
+                                (Math.random() - 0.5) * 8,
+                                'rgba(255, 0, 0, 1)',
+                                40
+                            );
+                        }
                         gameState.lives--;
                         document.getElementById('lives').textContent = gameState.lives;
                         if (gameState.lives <= 0) {
@@ -698,14 +1042,26 @@
                 }
             }
 
-            // Dot collection
+            // Enhanced dot collection
             for (let d of dots) {
                 if (!d.collected && Math.abs(player.x - d.x) < PLAYER_SIZE && Math.abs(player.y - d.y) < PLAYER_SIZE) {
                     d.collected = true;
-                    gameState.score += gameState.difficulty === 'easy' ? 5 : (gameState.difficulty === 'medium' ? 10 : 15);
+                    gameState.score += gameState.difficulty === 'easy' ? 10 : (gameState.difficulty === 'medium' ? 15 : 25);
                     document.getElementById('score').textContent = gameState.score;
                     const collected = dots.filter(d => d.collected).length;
                     document.getElementById('dots').textContent = collected;
+                    
+                    // Collection particles
+                    for (let i = 0; i < 8; i++) {
+                        addParticle(
+                            d.x,
+                            d.y,
+                            (Math.random() - 0.5) * 6,
+                            (Math.random() - 0.5) * 6,
+                            'rgba(255, 255, 0, 1)',
+                            25
+                        );
+                    }
                 }
             }
 
@@ -716,7 +1072,17 @@
                 for (let fakeExit of fakeExits) {
                     if (Math.abs(player.x - fakeExit.x) < PLAYER_SIZE && Math.abs(player.y - fakeExit.y) < PLAYER_SIZE) {
                         showTrollMessage(trollMessages[1]);
-                        // Teleport player to random location
+                        // Teleport player to random location with particles
+                        for (let i = 0; i < 15; i++) {
+                            addParticle(
+                                player.x + 10,
+                                player.y + 10,
+                                (Math.random() - 0.5) * 10,
+                                (Math.random() - 0.5) * 10,
+                                'rgba(255, 100, 0, 1)',
+                                30
+                            );
+                        }
                         player.x = Math.random() * (canvas.width - PLAYER_SIZE);
                         player.y = Math.random() * (canvas.height - PLAYER_SIZE);
                         return;
@@ -730,98 +1096,6 @@
             }
         }
 
-        function draw() {
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw platforms
-            ctx.fillStyle = '#ff0000';
-            ctx.shadowBlur = 5;
-            ctx.shadowColor = '#ff0000';
-            for (let p of platforms) {
-                if (p.visible) {
-                    ctx.fillRect(p.x, p.y, p.w, p.h);
-                } else {
-                    // Draw invisible platforms with slight transparency for hard mode
-                    ctx.fillStyle = 'rgba(255, 0, 0, 0.1)';
-                    ctx.fillRect(p.x, p.y, p.w, p.h);
-                    ctx.fillStyle = '#ff0000';
-                }
-            }
-
-            // Draw dots
-            for (let d of dots) {
-                if (!d.collected) {
-                    ctx.fillStyle = '#ff0000';
-                    ctx.beginPath();
-                    ctx.arc(d.x, d.y, DOT_SIZE, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-
-            // Draw fake exits
-            ctx.fillStyle = '#ff6600';
-            ctx.shadowColor = '#ff6600';
-            for (let fakeExit of fakeExits) {
-                ctx.fillRect(fakeExit.x, fakeExit.y, TILE_SIZE, TILE_SIZE);
-            }
-
-            // Draw real exit
-            const allDotsCollected = dots.every(d => d.collected);
-            ctx.fillStyle = allDotsCollected ? '#ffff00' : '#666';
-            ctx.shadowColor = allDotsCollected ? '#ffff00' : '#666';
-            ctx.fillRect(exit.x, exit.y, TILE_SIZE, TILE_SIZE);
-
-            // Draw enemies
-            ctx.fillStyle = '#ff6600';
-            ctx.shadowColor = '#ff6600';
-            for (let e of enemies) {
-                if (e.visible) {
-                    // Smooth enemy animation
-                    const bounce = Math.sin(animFrame * 0.2) * 2;
-                    ctx.fillRect(e.x, e.y + bounce, PLAYER_SIZE, PLAYER_SIZE);
-                }
-            }
-
-            // Draw player with smooth animation
-            ctx.fillStyle = '#ff0000';
-            ctx.shadowColor = '#ff0000';
-            
-            const runCycle = Math.floor(animFrame / 8) % 4;
-            const isMoving = Math.abs(player.vx) > 0;
-            
-            // Simple but smooth player representation
-            if (player.facingRight) {
-                // Body
-                ctx.fillRect(player.x + 4, player.y + 4, 8, 8);
-                // Head
-                ctx.fillRect(player.x + 6, player.y, 4, 6);
-                // Legs with running animation
-                if (isMoving) {
-                    const legOffset = Math.sin(animFrame * 0.3) * 2;
-                    ctx.fillRect(player.x + 2, player.y + 12 + legOffset, 3, 4);
-                    ctx.fillRect(player.x + 11, player.y + 12 - legOffset, 3, 4);
-                } else {
-                    ctx.fillRect(player.x + 4, player.y + 12, 3, 4);
-                    ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
-                }
-            } else {
-                // Mirror for left-facing
-                ctx.fillRect(player.x + 4, player.y + 4, 8, 8);
-                ctx.fillRect(player.x + 6, player.y, 4, 6);
-                if (isMoving) {
-                    const legOffset = Math.sin(animFrame * 0.3) * 2;
-                    ctx.fillRect(player.x + 11, player.y + 12 + legOffset, 3, 4);
-                    ctx.fillRect(player.x + 2, player.y + 12 - legOffset, 3, 4);
-                } else {
-                    ctx.fillRect(player.x + 4, player.y + 12, 3, 4);
-                    ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
-                }
-            }
-
-            ctx.shadowBlur = 0;
-        }
-
         function gameOver() {
             gameState.playing = false;
             document.getElementById('finalScore').textContent = gameState.score;
@@ -830,7 +1104,7 @@
 
         function levelComplete() {
             gameState.playing = false;
-            const bonus = gameState.difficulty === 'easy' ? 50 : (gameState.difficulty === 'medium' ? 100 : 200);
+            const bonus = gameState.difficulty === 'easy' ? 100 : (gameState.difficulty === 'medium' ? 200 : 400);
             gameState.score += bonus;
             document.getElementById('levelScore').textContent = gameState.score;
             document.getElementById('levelComplete').classList.remove('hidden');
