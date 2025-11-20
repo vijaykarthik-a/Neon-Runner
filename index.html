@@ -33,9 +33,9 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #1aff1a;
+            color: #ff0000;
             font-size: 18px;
-            text-shadow: 0 0 10px #1aff1a;
+            text-shadow: 0 0 10px #ff0000;
         }
 
         .boot-line {
@@ -57,15 +57,15 @@
         }
 
         @keyframes logoGlow {
-            0% { opacity: 0; text-shadow: 0 0 0px #1aff1a; }
-            50% { opacity: 1; text-shadow: 0 0 40px #1aff1a, 0 0 60px #0a6b0a; }
-            100% { opacity: 1; text-shadow: 0 0 20px #1aff1a; }
+            0% { opacity: 0; text-shadow: 0 0 0px #ff0000; }
+            50% { opacity: 1; text-shadow: 0 0 40px #ff0000, 0 0 60px #cc0000; }
+            100% { opacity: 1; text-shadow: 0 0 20px #ff0000; }
         }
 
         .progress-bar {
             width: 300px;
             height: 20px;
-            border: 2px solid #1aff1a;
+            border: 2px solid #ff0000;
             margin: 20px 0;
             position: relative;
             opacity: 0;
@@ -73,9 +73,9 @@
 
         .progress-fill {
             height: 100%;
-            background: #1aff1a;
+            background: #ff0000;
             width: 0%;
-            box-shadow: 0 0 20px #1aff1a;
+            box-shadow: 0 0 20px #ff0000;
             animation: fillProgress 2s ease-out forwards;
         }
 
@@ -88,15 +88,15 @@
             width: 800px;
             height: 600px;
             background: #0a0a0a;
-            border: 4px solid #1a4d1a;
-            box-shadow: 0 0 30px rgba(26, 255, 26, 0.3), inset 0 0 50px rgba(0, 0, 0, 0.8);
+            border: 4px solid #cc0000;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.3), inset 0 0 50px rgba(0, 0, 0, 0.8);
             opacity: 0;
             transform: scale(0.8);
             animation: containerAppear 1s ease-out 3s forwards;
         }
 
         @keyframes containerAppear {
-            to { 
+            to {
                 opacity: 1;
                 transform: scale(1);
             }
@@ -109,7 +109,7 @@
             background: linear-gradient(
                 to bottom,
                 transparent 50%,
-                rgba(0, 0, 0, 0.3) 51%
+                rgba(255, 0, 0, 0.1) 51%
             );
             background-size: 100% 4px;
             pointer-events: none;
@@ -130,8 +130,8 @@
         }
 
         .hud {
-            color: #1aff1a;
-            text-shadow: 0 0 5px #1aff1a, 0 0 10px #0a6b0a;
+            color: #ff0000;
+            text-shadow: 0 0 5px #ff0000, 0 0 10px #cc0000;
             font-size: 18px;
             display: flex;
             justify-content: space-between;
@@ -142,8 +142,8 @@
         canvas {
             display: block;
             background: #000;
-            border: 2px solid #1a4d1a;
-            box-shadow: inset 0 0 20px rgba(26, 255, 26, 0.1);
+            border: 2px solid #cc0000;
+            box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.1);
         }
 
         .menu {
@@ -152,8 +152,8 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            color: #1aff1a;
-            text-shadow: 0 0 10px #1aff1a;
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
             z-index: 5;
         }
 
@@ -165,8 +165,8 @@
         }
 
         @keyframes glow {
-            0%, 100% { text-shadow: 0 0 10px #1aff1a, 0 0 20px #1aff1a; }
-            50% { text-shadow: 0 0 20px #1aff1a, 0 0 40px #1aff1a, 0 0 60px #0a6b0a; }
+            0%, 100% { text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000; }
+            50% { text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000, 0 0 60px #cc0000; }
         }
 
         .menu-item {
@@ -182,6 +182,7 @@
         .menu-item:nth-child(2) { animation-delay: 0.2s; }
         .menu-item:nth-child(3) { animation-delay: 0.4s; }
         .menu-item:nth-child(4) { animation-delay: 0.6s; }
+        .menu-item:nth-child(5) { animation-delay: 0.8s; }
 
         @keyframes menuItemAppear {
             from {
@@ -195,38 +196,35 @@
         }
 
         .menu-item:hover {
-            text-shadow: 0 0 20px #1aff1a, 0 0 40px #1aff1a;
+            text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
             transform: scale(1.1);
         }
 
-        .level-select {
+        .difficulty-select {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
             max-width: 600px;
             margin: 20px auto;
         }
 
-        .level-btn {
+        .difficulty-btn {
             padding: 20px;
             background: #0a0a0a;
-            border: 2px solid #1a4d1a;
-            color: #1aff1a;
+            border: 2px solid #cc0000;
+            color: #ff0000;
             cursor: pointer;
             font-size: 20px;
             transition: all 0.3s;
             font-family: 'Courier New', monospace;
+            text-align: center;
         }
 
-        .level-btn:hover {
-            background: #1a4d1a;
-            box-shadow: 0 0 20px #1aff1a;
+        .difficulty-btn:hover {
+            background: #cc0000;
+            color: #000;
+            box-shadow: 0 0 20px #ff0000;
             transform: scale(1.05);
-        }
-
-        .level-btn.locked {
-            opacity: 0.3;
-            cursor: not-allowed;
         }
 
         .hidden {
@@ -238,11 +236,36 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: #1aff1a;
+            color: #ff0000;
             text-align: center;
             font-size: 36px;
-            text-shadow: 0 0 20px #1aff1a;
+            text-shadow: 0 0 20px #ff0000;
             z-index: 5;
+        }
+
+        .troll-message {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffff00;
+            font-size: 24px;
+            text-shadow: 0 0 10px #ffff00;
+            z-index: 15;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .troll-message.show {
+            opacity: 1;
+            animation: trollFade 3s ease-out;
+        }
+
+        @keyframes trollFade {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
         }
 
         .pixel-perfect {
@@ -250,15 +273,18 @@
             image-rendering: crisp-edges;
         }
 
-        .glitch {
-            animation: glitchEffect 0.3s;
-        }
-
-        @keyframes glitchEffect {
-            0%, 100% { transform: translate(0); }
-            25% { transform: translate(-2px, 2px); }
-            50% { transform: translate(2px, -2px); }
-            75% { transform: translate(-2px, -2px); }
+        @media (max-width: 900px) {
+            .game-container {
+                width: 90vw;
+                height: 70vh;
+                max-width: 800px;
+                max-height: 600px;
+            }
+            
+            canvas {
+                width: calc(100% - 40px);
+                height: calc(100% - 80px);
+            }
         }
     </style>
 </head>
@@ -283,14 +309,30 @@
         
         <div id="mainMenu" class="menu">
             <h1>◢ NEON RUNNER ◣</h1>
-            <div class="menu-item" onclick="startGame()">► START GAME</div>
-            <div class="menu-item" onclick="showLevelSelect()">► LEVEL SELECT</div>
+            <div class="menu-item" onclick="showDifficultySelect()">► START GAME</div>
             <div class="menu-item" onclick="showInstructions()">► INSTRUCTIONS</div>
+            <div class="menu-item" onclick="goBack()">► BACK TO PORTFOLIO</div>
         </div>
 
-        <div id="levelSelect" class="menu hidden">
-            <h1>SELECT LEVEL</h1>
-            <div class="level-select" id="levelGrid"></div>
+        <div id="difficultySelect" class="menu hidden">
+            <h1>SELECT DIFFICULTY</h1>
+            <div class="difficulty-select">
+                <div class="difficulty-btn" onclick="startGame('easy')">
+                    <div style="font-size: 24px; margin-bottom: 10px;">😊</div>
+                    <div>EASY</div>
+                    <div style="font-size: 14px; margin-top: 5px;">Chill Mode</div>
+                </div>
+                <div class="difficulty-btn" onclick="startGame('medium')">
+                    <div style="font-size: 24px; margin-bottom: 10px;">😐</div>
+                    <div>MEDIUM</div>
+                    <div style="font-size: 14px; margin-top: 5px;">Normal Challenge</div>
+                </div>
+                <div class="difficulty-btn" onclick="startGame('hard')">
+                    <div style="font-size: 24px; margin-bottom: 10px;">😈</div>
+                    <div>HARD</div>
+                    <div style="font-size: 14px; margin-top: 5px;">Troll Mode</div>
+                </div>
+            </div>
             <div class="menu-item" onclick="showMainMenu()" style="margin-top: 20px;">◄ BACK</div>
         </div>
 
@@ -302,6 +344,7 @@
                 <p>COLLECT ALL DOTS</p>
                 <p>AVOID ENEMIES</p>
                 <p>REACH THE EXIT</p>
+                <p style="color: #ffff00; margin-top: 20px;">⚠️ HARD MODE HAS SURPRISES!</p>
             </div>
             <div class="menu-item" onclick="showMainMenu()">◄ BACK</div>
         </div>
@@ -312,8 +355,10 @@
                 <div>SCORE: <span id="score">0</span></div>
                 <div>LIVES: <span id="lives">3</span></div>
                 <div>DOTS: <span id="dots">0</span>/<span id="totalDots">0</span></div>
+                <div>MODE: <span id="difficultyMode">EASY</span></div>
             </div>
             <canvas id="gameCanvas" width="760" height="520" class="pixel-perfect"></canvas>
+            <div id="trollMessage" class="troll-message"></div>
         </div>
 
         <div id="gameOver" class="game-over hidden">
@@ -348,8 +393,8 @@
             currentLevel: 1,
             score: 0,
             lives: 3,
-            unlockedLevels: 1,
-            playing: false
+            playing: false,
+            difficulty: 'easy'
         };
 
         const TILE_SIZE = 20;
@@ -362,59 +407,56 @@
         let platforms = [];
         let exit = { x: 0, y: 0 };
         let keys = {};
-
-        const levelColors = [
-            '#1aff1a', '#1affff', '#ff1aff', '#ffff1a', '#ff6b1a',
-            '#1aff6b', '#6b1aff', '#ff1a6b', '#6bff1a', '#1a6bff',
-            '#ff6bff', '#ffff6b', '#6bffff', '#ff6b6b', '#6bff6b',
-            '#6b6bff', '#ffaa1a', '#1aaaff', '#aa1aff'
-        ];
-
-        const levels = [
-            { platforms: [[0,25,38,1],[5,20,10,1],[20,15,10,1],[5,10,8,1],[25,8,8,1]], enemies: [[15,19,1]], dots: 5, startX: 2, startY: 23, exitX: 35, exitY: 23 },
-            { platforms: [[0,25,38,1],[3,20,5,1],[10,18,8,1],[20,15,6,1],[28,12,8,1],[10,8,10,1]], enemies: [[12,17,1],[22,14,1]], dots: 7, startX: 2, startY: 23, exitX: 35, exitY: 10 },
-            { platforms: [[0,25,38,1],[5,20,3,1],[12,18,3,1],[19,16,3,1],[26,14,3,1],[33,12,3,1],[5,8,28,1]], enemies: [[7,19,1],[21,15,1],[28,7,1]], dots: 8, startX: 2, startY: 23, exitX: 35, exitY: 6 },
-            { platforms: [[0,25,38,1],[8,20,6,1],[24,20,6,1],[15,15,8,1],[5,10,10,1],[23,10,10,1]], enemies: [[10,19,1],[26,19,1],[17,14,1]], dots: 9, startX: 2, startY: 23, exitX: 30, exitY: 8 },
-            { platforms: [[0,25,38,1],[10,20,18,1],[5,15,8,1],[25,15,8,1],[15,10,8,1],[10,5,18,1]], enemies: [[12,19,1],[24,19,2],[6,14,1],[27,14,1]], dots: 10, startX: 2, startY: 23, exitX: 20, exitY: 3 },
-            { platforms: [[0,25,38,1],[3,22,5,1],[10,19,5,1],[17,16,5,1],[24,13,5,1],[31,10,5,1],[10,7,18,1]], enemies: [[5,21,1],[12,18,1],[19,15,1],[26,12,1]], dots: 11, startX: 2, startY: 23, exitX: 20, exitY: 5 },
-            { platforms: [[0,25,38,1],[5,20,8,1],[18,18,8,1],[25,20,8,1],[10,13,18,1],[5,8,5,1],[28,8,5,1]], enemies: [[7,19,2],[20,17,2],[15,12,1]], dots: 12, startX: 2, startY: 23, exitX: 30, exitY: 6 },
-            { platforms: [[0,25,38,1],[15,20,8,1],[8,15,6,1],[24,15,6,1],[15,10,8,1],[5,5,28,1]], enemies: [[17,19,2],[10,14,1],[26,14,1],[20,9,2]], dots: 13, startX: 2, startY: 23, exitX: 30, exitY: 3 },
-            { platforms: [[0,25,38,1],[5,20,3,1],[15,18,3,1],[25,16,3,1],[35,14,3,1],[10,12,3,1],[20,10,3,1],[5,5,28,1]], enemies: [[7,19,1],[17,17,1],[27,15,1],[12,11,1],[22,9,1]], dots: 14, startX: 2, startY: 23, exitX: 30, exitY: 3 },
-            { platforms: [[0,25,38,1],[10,20,5,1],[23,18,5,1],[5,15,8,1],[25,13,8,1],[15,10,8,1],[10,5,18,1]], enemies: [[12,19,2],[25,17,2],[7,14,1],[27,12,1],[17,9,2]], dots: 15, startX: 2, startY: 23, exitX: 20, exitY: 3 },
-            { platforms: [[0,25,38,1],[8,22,6,1],[24,22,6,1],[16,19,6,1],[8,16,6,1],[24,16,6,1],[12,12,14,1],[5,7,28,1]], enemies: [[10,21,1],[26,21,1],[18,18,1],[10,15,1],[26,15,1],[19,11,2]], dots: 16, startX: 2, startY: 23, exitX: 30, exitY: 5 },
-            { platforms: [[0,25,38,1],[5,20,5,1],[15,18,5,1],[25,16,5,1],[10,13,5,1],[20,11,5,1],[30,9,5,1],[8,6,22,1]], enemies: [[7,19,1],[17,17,1],[27,15,1],[12,12,1],[22,10,1],[32,8,1],[15,5,2]], dots: 17, startX: 2, startY: 23, exitX: 25, exitY: 4 },
-            { platforms: [[0,25,38,1],[12,20,14,1],[5,15,8,1],[25,15,8,1],[12,10,14,1],[18,5,8,1]], enemies: [[15,19,2],[7,14,1],[27,14,1],[15,9,2],[20,4,2]], dots: 18, startX: 2, startY: 23, exitX: 22, exitY: 3 },
-            { platforms: [[0,25,38,1],[8,21,5,1],[25,21,5,1],[15,18,8,1],[8,14,5,1],[25,14,5,1],[12,10,14,1],[5,5,28,1]], enemies: [[10,20,1],[27,20,1],[17,17,2],[10,13,1],[27,13,1],[19,9,2],[10,4,2]], dots: 19, startX: 2, startY: 23, exitX: 30, exitY: 3 },
-            { platforms: [[0,25,38,1],[5,22,3,1],[10,20,3,1],[15,18,3,1],[20,16,3,1],[25,14,3,1],[30,12,3,1],[10,9,18,1],[5,4,28,1]], enemies: [[7,21,1],[12,19,1],[17,17,1],[22,15,1],[27,13,1],[32,11,1],[15,8,2],[20,3,2]], dots: 20, startX: 2, startY: 23, exitX: 30, exitY: 2 },
-            { platforms: [[0,25,38,1],[15,20,8,1],[5,16,8,1],[25,16,8,1],[10,12,5,1],[23,12,5,1],[15,8,8,1],[8,4,22,1]], enemies: [[17,19,2],[7,15,1],[27,15,1],[12,11,1],[25,11,1],[17,7,2],[15,3,2]], dots: 21, startX: 2, startY: 23, exitX: 25, exitY: 2 },
-            { platforms: [[0,25,38,1],[10,21,5,1],[23,21,5,1],[15,18,8,1],[8,14,5,1],[25,14,5,1],[15,10,8,1],[10,6,5,1],[23,6,5,1],[15,2,8,1]], enemies: [[12,20,1],[25,20,1],[17,17,2],[10,13,1],[27,13,1],[17,9,2],[12,5,1],[25,5,1]], dots: 22, startX: 2, startY: 23, exitX: 18, exitY: 0 },
-            { platforms: [[0,25,38,1],[8,22,6,1],[24,22,6,1],[16,19,6,1],[5,16,8,1],[25,16,8,1],[12,13,14,1],[8,9,6,1],[24,9,6,1],[15,5,8,1]], enemies: [[10,21,1],[26,21,1],[18,18,2],[7,15,1],[27,15,1],[19,12,2],[10,8,1],[26,8,1],[17,4,2]], dots: 23, startX: 2, startY: 23, exitX: 18, exitY: 3 },
-            { platforms: [[0,25,38,1],[5,20,5,1],[28,20,5,1],[12,17,5,1],[21,17,5,1],[8,13,8,1],[22,13,8,1],[15,9,8,1],[5,5,5,1],[28,5,5,1],[15,1,8,1]], enemies: [[7,19,1],[30,19,1],[14,16,1],[23,16,1],[10,12,1],[24,12,1],[17,8,2],[7,4,1],[30,4,1],[17,0,2]], dots: 25, startX: 2, startY: 23, exitX: 18, exitY: -1 }
-        ];
-
         let animFrame = 0;
-        let currentColor = '#1aff1a';
+        let trollTimer = 0;
 
-        function initLevelSelect() {
-            const grid = document.getElementById('levelGrid');
-            grid.innerHTML = '';
-            for (let i = 1; i <= 19; i++) {
-                const btn = document.createElement('div');
-                btn.className = 'level-btn' + (i > gameState.unlockedLevels ? ' locked' : '');
-                btn.textContent = i;
-                if (i <= gameState.unlockedLevels) {
-                    btn.onclick = () => {
-                        gameState.currentLevel = i;
-                        startGame();
-                    };
-                }
-                grid.appendChild(btn);
-            }
+        // Difficulty-based level sets
+        const levelSets = {
+            easy: [
+                { platforms: [[0,25,38,1],[10,20,18,1],[5,15,8,1],[25,15,8,1]], enemies: [], dots: 3, startX: 2, startY: 23, exitX: 35, exitY: 13 },
+                { platforms: [[0,25,38,1],[8,20,6,1],[24,20,6,1],[15,15,8,1]], enemies: [[12,19,0.5]], dots: 4, startX: 2, startY: 23, exitX: 30, exitY: 13 },
+                { platforms: [[0,25,38,1],[5,20,10,1],[20,15,10,1],[10,10,18,1]], enemies: [[7,19,0.5],[22,14,0.5]], dots: 5, startX: 2, startY: 23, exitX: 25, exitY: 8 }
+            ],
+            medium: [
+                { platforms: [[0,25,38,1],[5,20,10,1],[20,15,10,1],[5,10,8,1],[25,8,8,1]], enemies: [[15,19,1]], dots: 5, startX: 2, startY: 23, exitX: 30, exitY: 6 },
+                { platforms: [[0,25,38,1],[3,20,5,1],[10,18,8,1],[20,15,6,1],[28,12,8,1]], enemies: [[12,17,1],[22,14,1]], dots: 6, startX: 2, startY: 23, exitX: 32, exitY: 10 },
+                { platforms: [[0,25,38,1],[8,20,6,1],[24,20,6,1],[15,15,8,1],[10,10,18,1]], enemies: [[10,19,1],[26,19,1],[17,14,1]], dots: 7, startX: 2, startY: 23, exitX: 20, exitY: 8 }
+            ],
+            hard: [
+                { platforms: [[0,25,38,1],[5,20,3,1],[15,18,3,1],[25,16,3,1],[10,12,3,1],[20,10,3,1],[30,8,3,1]], enemies: [[7,19,2],[17,17,2],[27,15,2]], dots: 8, startX: 2, startY: 23, exitX: 32, exitY: 6, troll: true },
+                { platforms: [[0,25,38,1],[10,20,5,1],[23,18,5,1],[8,15,5,1],[25,13,5,1],[15,10,8,1]], enemies: [[12,19,2],[25,17,2],[10,14,2],[27,12,2]], dots: 9, startX: 2, startY: 23, exitX: 19, exitY: 8, troll: true },
+                { platforms: [[0,25,38,1],[5,22,3,1],[12,20,3,1],[19,18,3,1],[26,16,3,1],[33,14,3,1],[15,10,8,1]], enemies: [[7,21,2],[14,19,2],[21,17,2],[28,15,2],[35,13,2]], dots: 10, startX: 2, startY: 23, exitX: 19, exitY: 8, troll: true }
+            ]
+        };
+
+        const trollMessages = [
+            "😈 SURPRISE! INVISIBLE PLATFORM!",
+            "🎭 PLOT TWIST: FAKE EXIT!",
+            "👻 GHOST ENEMY APPEARED!",
+            "🔄 CONTROLS REVERSED!",
+            "⚡ SPEED BOOST... OR IS IT?",
+            "🎪 WELCOME TO TROLL LAND!",
+            "🤡 DID YOU EXPECT FAIR PLAY?",
+            "🎯 GOOD LUCK WITH THAT!"
+        ];
+
+        let controlsReversed = false;
+        let speedMultiplier = 1;
+        let invisiblePlatforms = [];
+        let fakeExits = [];
+
+        function showTrollMessage(message) {
+            const trollDiv = document.getElementById('trollMessage');
+            trollDiv.textContent = message;
+            trollDiv.classList.add('show');
+            setTimeout(() => {
+                trollDiv.classList.remove('show');
+            }, 3000);
         }
 
         function showMainMenu() {
             document.getElementById('mainMenu').classList.remove('hidden');
-            document.getElementById('levelSelect').classList.add('hidden');
+            document.getElementById('difficultySelect').classList.add('hidden');
             document.getElementById('instructions').classList.add('hidden');
             document.getElementById('gameScreen').classList.add('hidden');
             document.getElementById('gameOver').classList.add('hidden');
@@ -422,10 +464,9 @@
             gameState.playing = false;
         }
 
-        function showLevelSelect() {
-            initLevelSelect();
+        function showDifficultySelect() {
             document.getElementById('mainMenu').classList.add('hidden');
-            document.getElementById('levelSelect').classList.remove('hidden');
+            document.getElementById('difficultySelect').classList.remove('hidden');
         }
 
         function showInstructions() {
@@ -433,28 +474,43 @@
             document.getElementById('instructions').classList.remove('hidden');
         }
 
-        function startGame() {
-            document.getElementById('mainMenu').classList.add('hidden');
-            document.getElementById('levelSelect').classList.add('hidden');
-            document.getElementById('instructions').classList.add('hidden');
-            document.getElementById('gameOver').classList.add('hidden');
-            document.getElementById('levelComplete').classList.add('hidden');
+        function goBack() {
+            window.history.back();
+        }
+
+        function startGame(difficulty) {
+            gameState.difficulty = difficulty;
+            gameState.currentLevel = 1;
+            gameState.score = 0;
+            gameState.lives = 3;
+            
+            document.getElementById('difficultySelect').classList.add('hidden');
             document.getElementById('gameScreen').classList.remove('hidden');
+            document.getElementById('difficultyMode').textContent = difficulty.toUpperCase();
+            
             gameState.playing = true;
             loadLevel(gameState.currentLevel);
             gameLoop();
         }
 
         function loadLevel(levelNum) {
-            const level = levels[levelNum - 1];
-            currentColor = levelColors[levelNum - 1];
+            const levels = levelSets[gameState.difficulty];
+            const level = levels[levelNum - 1] || levels[levels.length - 1];
             
-            // Update HUD color
-            document.querySelector('.hud').style.color = currentColor;
-            document.querySelector('.hud').style.textShadow = `0 0 5px ${currentColor}, 0 0 10px ${currentColor}`;
+            // Reset troll effects
+            controlsReversed = false;
+            speedMultiplier = 1;
+            invisiblePlatforms = [];
+            fakeExits = [];
             
-            platforms = level.platforms.map(p => ({ x: p[0] * TILE_SIZE, y: p[1] * TILE_SIZE, w: p[2] * TILE_SIZE, h: p[3] * TILE_SIZE }));
-            
+            platforms = level.platforms.map(p => ({ 
+                x: p[0] * TILE_SIZE, 
+                y: p[1] * TILE_SIZE, 
+                w: p[2] * TILE_SIZE, 
+                h: p[3] * TILE_SIZE,
+                visible: true
+            }));
+
             player = {
                 x: level.startX * TILE_SIZE,
                 y: level.startY * TILE_SIZE,
@@ -464,18 +520,21 @@
                 facingRight: true
             };
 
-            exit = { x: level.exitX * TILE_SIZE, y: level.exitY * TILE_SIZE };
+            exit = { x: level.exitX * TILE_SIZE, y: level.exitY * TILE_SIZE, real: true };
 
             enemies = level.enemies.map(e => ({
                 x: e[0] * TILE_SIZE,
                 y: e[1] * TILE_SIZE,
-                vx: e[2],
+                vx: e[2] * (gameState.difficulty === 'easy' ? 0.5 : 1),
                 left: e[0] * TILE_SIZE - 60,
-                right: e[0] * TILE_SIZE + 60
+                right: e[0] * TILE_SIZE + 60,
+                visible: true
             }));
 
+            // Generate dots
             dots = [];
-            for (let i = 0; i < level.dots; i++) {
+            const dotCount = gameState.difficulty === 'easy' ? level.dots - 1 : level.dots;
+            for (let i = 0; i < dotCount; i++) {
                 let x, y, safe;
                 do {
                     safe = true;
@@ -492,31 +551,67 @@
                 dots.push({ x, y, collected: false });
             }
 
+            // Add troll elements for hard mode
+            if (gameState.difficulty === 'hard' && level.troll) {
+                setTimeout(() => {
+                    const trollType = Math.floor(Math.random() * 4);
+                    switch(trollType) {
+                        case 0: // Invisible platforms
+                            if (platforms.length > 2) {
+                                const randomPlatform = platforms[Math.floor(Math.random() * (platforms.length - 1)) + 1];
+                                randomPlatform.visible = false;
+                                invisiblePlatforms.push(randomPlatform);
+                                showTrollMessage(trollMessages[0]);
+                            }
+                            break;
+                        case 1: // Fake exit
+                            fakeExits.push({
+                                x: exit.x + (Math.random() - 0.5) * 100,
+                                y: exit.y + (Math.random() - 0.5) * 100
+                            });
+                            showTrollMessage(trollMessages[1]);
+                            break;
+                        case 2: // Reverse controls
+                            controlsReversed = true;
+                            showTrollMessage(trollMessages[3]);
+                            setTimeout(() => {
+                                controlsReversed = false;
+                            }, 5000);
+                            break;
+                        case 3: // Speed change
+                            speedMultiplier = Math.random() > 0.5 ? 2 : 0.5;
+                            showTrollMessage(trollMessages[4]);
+                            setTimeout(() => {
+                                speedMultiplier = 1;
+                            }, 3000);
+                            break;
+                    }
+                }, Math.random() * 3000 + 2000);
+            }
+
             document.getElementById('levelNum').textContent = levelNum;
             document.getElementById('lives').textContent = gameState.lives;
             document.getElementById('score').textContent = gameState.score;
             document.getElementById('dots').textContent = '0';
-            document.getElementById('totalDots').textContent = level.dots;
+            document.getElementById('totalDots').textContent = dotCount;
         }
 
         function restartGame() {
             gameState.score = 0;
             gameState.lives = 3;
             gameState.currentLevel = 1;
-            startGame();
+            startGame(gameState.difficulty);
         }
 
         function nextLevel() {
             gameState.currentLevel++;
-            if (gameState.currentLevel > gameState.unlockedLevels) {
-                gameState.unlockedLevels = gameState.currentLevel;
-            }
-            if (gameState.currentLevel > 19) {
-                gameState.currentLevel = 1;
-                alert('CONGRATULATIONS! YOU COMPLETED ALL 19 LEVELS!');
+            const maxLevels = levelSets[gameState.difficulty].length;
+            if (gameState.currentLevel > maxLevels) {
+                alert(`CONGRATULATIONS! YOU COMPLETED ALL ${maxLevels} ${gameState.difficulty.toUpperCase()} LEVELS!`);
                 showMainMenu();
             } else {
-                startGame();
+                loadLevel(gameState.currentLevel);
+                document.getElementById('levelComplete').classList.add('hidden');
             }
         }
 
@@ -530,20 +625,27 @@
 
         function update() {
             animFrame++;
+            trollTimer++;
+
+            // Player movement with difficulty adjustments
+            let moveSpeed = 3 * speedMultiplier;
+            if (gameState.difficulty === 'easy') moveSpeed = 2;
             
-            // Player movement
-            if (keys['ArrowLeft']) {
-                player.vx = -3;
+            const leftKey = controlsReversed ? 'ArrowRight' : 'ArrowLeft';
+            const rightKey = controlsReversed ? 'ArrowLeft' : 'ArrowRight';
+
+            if (keys[leftKey]) {
+                player.vx = -moveSpeed;
                 player.facingRight = false;
-            } else if (keys['ArrowRight']) {
-                player.vx = 3;
+            } else if (keys[rightKey]) {
+                player.vx = moveSpeed;
                 player.facingRight = true;
             } else {
                 player.vx = 0;
             }
 
             if (keys[' '] && player.grounded) {
-                player.vy = -12;
+                player.vy = gameState.difficulty === 'easy' ? -10 : -12;
                 player.grounded = false;
             }
 
@@ -554,7 +656,7 @@
             // Collision with platforms
             player.grounded = false;
             for (let p of platforms) {
-                if (player.x + PLAYER_SIZE > p.x && player.x < p.x + p.w &&
+                if (p.visible && player.x + PLAYER_SIZE > p.x && player.x < p.x + p.w &&
                     player.y + PLAYER_SIZE > p.y && player.y < p.y + p.h) {
                     if (player.vy > 0) {
                         player.y = p.y - PLAYER_SIZE;
@@ -577,19 +679,21 @@
                 }
             }
 
-            // Enemy movement
+            // Enemy movement and collision
             for (let e of enemies) {
-                e.x += e.vx;
-                if (e.x <= e.left || e.x >= e.right) e.vx *= -1;
+                if (e.visible) {
+                    e.x += e.vx;
+                    if (e.x <= e.left || e.x >= e.right) e.vx *= -1;
 
-                // Enemy collision
-                if (Math.abs(player.x - e.x) < PLAYER_SIZE && Math.abs(player.y - e.y) < PLAYER_SIZE) {
-                    gameState.lives--;
-                    document.getElementById('lives').textContent = gameState.lives;
-                    if (gameState.lives <= 0) {
-                        gameOver();
-                    } else {
-                        loadLevel(gameState.currentLevel);
+                    // Enemy collision
+                    if (Math.abs(player.x - e.x) < PLAYER_SIZE && Math.abs(player.y - e.y) < PLAYER_SIZE) {
+                        gameState.lives--;
+                        document.getElementById('lives').textContent = gameState.lives;
+                        if (gameState.lives <= 0) {
+                            gameOver();
+                        } else {
+                            loadLevel(gameState.currentLevel);
+                        }
                     }
                 }
             }
@@ -598,7 +702,7 @@
             for (let d of dots) {
                 if (!d.collected && Math.abs(player.x - d.x) < PLAYER_SIZE && Math.abs(player.y - d.y) < PLAYER_SIZE) {
                     d.collected = true;
-                    gameState.score += 10;
+                    gameState.score += gameState.difficulty === 'easy' ? 5 : (gameState.difficulty === 'medium' ? 10 : 15);
                     document.getElementById('score').textContent = gameState.score;
                     const collected = dots.filter(d => d.collected).length;
                     document.getElementById('dots').textContent = collected;
@@ -607,8 +711,22 @@
 
             // Exit check
             const allDotsCollected = dots.every(d => d.collected);
-            if (allDotsCollected && Math.abs(player.x - exit.x) < PLAYER_SIZE && Math.abs(player.y - exit.y) < PLAYER_SIZE) {
-                levelComplete();
+            if (allDotsCollected) {
+                // Check fake exits first (hard mode)
+                for (let fakeExit of fakeExits) {
+                    if (Math.abs(player.x - fakeExit.x) < PLAYER_SIZE && Math.abs(player.y - fakeExit.y) < PLAYER_SIZE) {
+                        showTrollMessage(trollMessages[1]);
+                        // Teleport player to random location
+                        player.x = Math.random() * (canvas.width - PLAYER_SIZE);
+                        player.y = Math.random() * (canvas.height - PLAYER_SIZE);
+                        return;
+                    }
+                }
+                
+                // Check real exit
+                if (Math.abs(player.x - exit.x) < PLAYER_SIZE && Math.abs(player.y - exit.y) < PLAYER_SIZE) {
+                    levelComplete();
+                }
             }
         }
 
@@ -617,129 +735,86 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Draw platforms
-            ctx.fillStyle = currentColor;
+            ctx.fillStyle = '#ff0000';
             ctx.shadowBlur = 5;
-            ctx.shadowColor = currentColor;
+            ctx.shadowColor = '#ff0000';
             for (let p of platforms) {
-                for (let i = 0; i < p.w / 4; i++) {
-                    for (let j = 0; j < p.h / 4; j++) {
-                        if ((i + j) % 2 === 0) {
-                            ctx.fillRect(p.x + i * 4, p.y + j * 4, 3, 3);
-                        }
-                    }
+                if (p.visible) {
+                    ctx.fillRect(p.x, p.y, p.w, p.h);
+                } else {
+                    // Draw invisible platforms with slight transparency for hard mode
+                    ctx.fillStyle = 'rgba(255, 0, 0, 0.1)';
+                    ctx.fillRect(p.x, p.y, p.w, p.h);
+                    ctx.fillStyle = '#ff0000';
                 }
             }
 
             // Draw dots
             for (let d of dots) {
                 if (!d.collected) {
-                    ctx.fillStyle = currentColor;
+                    ctx.fillStyle = '#ff0000';
                     ctx.beginPath();
                     ctx.arc(d.x, d.y, DOT_SIZE, 0, Math.PI * 2);
                     ctx.fill();
                 }
             }
 
-            // Draw exit
+            // Draw fake exits
+            ctx.fillStyle = '#ff6600';
+            ctx.shadowColor = '#ff6600';
+            for (let fakeExit of fakeExits) {
+                ctx.fillRect(fakeExit.x, fakeExit.y, TILE_SIZE, TILE_SIZE);
+            }
+
+            // Draw real exit
             const allDotsCollected = dots.every(d => d.collected);
-            ctx.fillStyle = allDotsCollected ? '#ffff1a' : '#4d4d4d';
-            ctx.shadowColor = allDotsCollected ? '#ffff1a' : '#4d4d4d';
+            ctx.fillStyle = allDotsCollected ? '#ffff00' : '#666';
+            ctx.shadowColor = allDotsCollected ? '#ffff00' : '#666';
             ctx.fillRect(exit.x, exit.y, TILE_SIZE, TILE_SIZE);
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(exit.x + 4, exit.y + 4, 4, 12);
-            ctx.strokeRect(exit.x + 12, exit.y + 4, 4, 12);
 
             // Draw enemies
-            ctx.fillStyle = '#ff1a1a';
-            ctx.shadowColor = '#ff1a1a';
+            ctx.fillStyle = '#ff6600';
+            ctx.shadowColor = '#ff6600';
             for (let e of enemies) {
-                for (let i = 0; i < 4; i++) {
-                    for (let j = 0; j < 4; j++) {
-                        ctx.fillRect(e.x + i * 4, e.y + j * 4, 3, 3);
-                    }
+                if (e.visible) {
+                    // Smooth enemy animation
+                    const bounce = Math.sin(animFrame * 0.2) * 2;
+                    ctx.fillRect(e.x, e.y + bounce, PLAYER_SIZE, PLAYER_SIZE);
                 }
             }
 
-            // Draw player - animated running character
-            ctx.fillStyle = currentColor;
-            ctx.shadowColor = currentColor;
+            // Draw player with smooth animation
+            ctx.fillStyle = '#ff0000';
+            ctx.shadowColor = '#ff0000';
             
             const runCycle = Math.floor(animFrame / 8) % 4;
             const isMoving = Math.abs(player.vx) > 0;
             
+            // Simple but smooth player representation
             if (player.facingRight) {
-                // Head
-                ctx.fillRect(player.x + 6, player.y + 2, 6, 4);
                 // Body
-                ctx.fillRect(player.x + 6, player.y + 6, 6, 6);
-                // Arms
+                ctx.fillRect(player.x + 4, player.y + 4, 8, 8);
+                // Head
+                ctx.fillRect(player.x + 6, player.y, 4, 6);
+                // Legs with running animation
                 if (isMoving) {
-                    if (runCycle === 0 || runCycle === 2) {
-                        ctx.fillRect(player.x + 3, player.y + 7, 3, 4);
-                        ctx.fillRect(player.x + 12, player.y + 9, 3, 3);
-                    } else {
-                        ctx.fillRect(player.x + 12, player.y + 7, 3, 4);
-                        ctx.fillRect(player.x + 3, player.y + 9, 3, 3);
-                    }
+                    const legOffset = Math.sin(animFrame * 0.3) * 2;
+                    ctx.fillRect(player.x + 2, player.y + 12 + legOffset, 3, 4);
+                    ctx.fillRect(player.x + 11, player.y + 12 - legOffset, 3, 4);
                 } else {
-                    ctx.fillRect(player.x + 3, player.y + 8, 3, 3);
-                    ctx.fillRect(player.x + 12, player.y + 8, 3, 3);
-                }
-                // Legs - running animation
-                if (isMoving) {
-                    if (runCycle === 0) {
-                        ctx.fillRect(player.x + 5, player.y + 12, 3, 4);
-                        ctx.fillRect(player.x + 10, player.y + 12, 3, 3);
-                    } else if (runCycle === 1) {
-                        ctx.fillRect(player.x + 6, player.y + 12, 3, 4);
-                        ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
-                    } else if (runCycle === 2) {
-                        ctx.fillRect(player.x + 10, player.y + 12, 3, 4);
-                        ctx.fillRect(player.x + 5, player.y + 12, 3, 3);
-                    } else {
-                        ctx.fillRect(player.x + 6, player.y + 12, 3, 4);
-                        ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
-                    }
-                } else {
-                    ctx.fillRect(player.x + 6, player.y + 12, 3, 4);
+                    ctx.fillRect(player.x + 4, player.y + 12, 3, 4);
                     ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
                 }
             } else {
-                // Head
-                ctx.fillRect(player.x + 6, player.y + 2, 6, 4);
-                // Body
-                ctx.fillRect(player.x + 6, player.y + 6, 6, 6);
-                // Arms
+                // Mirror for left-facing
+                ctx.fillRect(player.x + 4, player.y + 4, 8, 8);
+                ctx.fillRect(player.x + 6, player.y, 4, 6);
                 if (isMoving) {
-                    if (runCycle === 0 || runCycle === 2) {
-                        ctx.fillRect(player.x + 12, player.y + 7, 3, 4);
-                        ctx.fillRect(player.x + 3, player.y + 9, 3, 3);
-                    } else {
-                        ctx.fillRect(player.x + 3, player.y + 7, 3, 4);
-                        ctx.fillRect(player.x + 12, player.y + 9, 3, 3);
-                    }
+                    const legOffset = Math.sin(animFrame * 0.3) * 2;
+                    ctx.fillRect(player.x + 11, player.y + 12 + legOffset, 3, 4);
+                    ctx.fillRect(player.x + 2, player.y + 12 - legOffset, 3, 4);
                 } else {
-                    ctx.fillRect(player.x + 3, player.y + 8, 3, 3);
-                    ctx.fillRect(player.x + 12, player.y + 8, 3, 3);
-                }
-                // Legs - running animation
-                if (isMoving) {
-                    if (runCycle === 0) {
-                        ctx.fillRect(player.x + 10, player.y + 12, 3, 4);
-                        ctx.fillRect(player.x + 5, player.y + 12, 3, 3);
-                    } else if (runCycle === 1) {
-                        ctx.fillRect(player.x + 6, player.y + 12, 3, 4);
-                        ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
-                    } else if (runCycle === 2) {
-                        ctx.fillRect(player.x + 5, player.y + 12, 3, 4);
-                        ctx.fillRect(player.x + 10, player.y + 12, 3, 3);
-                    } else {
-                        ctx.fillRect(player.x + 6, player.y + 12, 3, 4);
-                        ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
-                    }
-                } else {
-                    ctx.fillRect(player.x + 6, player.y + 12, 3, 4);
+                    ctx.fillRect(player.x + 4, player.y + 12, 3, 4);
                     ctx.fillRect(player.x + 9, player.y + 12, 3, 4);
                 }
             }
@@ -755,7 +830,8 @@
 
         function levelComplete() {
             gameState.playing = false;
-            gameState.score += 100;
+            const bonus = gameState.difficulty === 'easy' ? 50 : (gameState.difficulty === 'medium' ? 100 : 200);
+            gameState.score += bonus;
             document.getElementById('levelScore').textContent = gameState.score;
             document.getElementById('levelComplete').classList.remove('hidden');
         }
@@ -768,8 +844,6 @@
         document.addEventListener('keyup', e => {
             keys[e.key] = false;
         });
-
-        initLevelSelect();
     </script>
 </body>
 </html>
